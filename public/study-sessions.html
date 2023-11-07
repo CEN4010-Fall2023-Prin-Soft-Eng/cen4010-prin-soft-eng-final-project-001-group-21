@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Sessions</title>
+  <!-- Link to CSS files here -->
+</head>
+<body>
+  <div class="container">
+    <h1>Study Sessions</h1>
+    <!-- Form to create a new study session -->
+    <form id="study-session-form" onsubmit="createStudySession(event)">
+      <!-- Input field for date -->
+      <label for="session-date">Session Date</label>
+      <input type="date" id="session-date" name="session-date" title="Choose your session date" required="">
+      
+      <!-- Input field for start time -->
+      <label for="start-time">Start Time</label>
+      <input type="time" id="start-time" name="start-time" required>
+      
+      <!-- Input field for end time -->
+      <label for="end-time">End Time</label>
+      <input type="time" id="end-time" name="end-time" required>
+      
+      <!-- Input field for subject -->
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="subject" placeholder="Subject" required>
+      
+      <!-- Input field for notes -->
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes" placeholder="Notes"></textarea>
+      
+      <!-- Add other fields as necessary -->
+      <button type="submit">Create Session</button>
+    </form>
+    
+    <!-- Area to display existing study sessions -->
+    <div id="sessions-display">
+      <!-- Populate with study session data -->
+    </div>
+  </div>
+  <div id="messageBox"></div>
+
+  <!-- Link to JavaScript files here -->
+  <script>
+    function createStudySession(event) {
+      event.preventDefault();
+      const studySessionData = {
+          date: document.getElementById('session-date').value,
+          start_time: document.getElementById('start-time').value,
+          end_time: document.getElementById('end-time').value,
+          subject: document.getElementById('subject').value,
+          notes: document.getElementById('notes').value,
+      };
+
+      fetch('/api/study-sessions', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(studySessionData),
+      })
+      .then(response => {
+        console.log('Received response:', response); // Log full response
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+    })
+      .then(data => {
+        // Handle the response data here
+        if (data.id) { // assuming 'id' is a property of the response object when a session is created
+            displaySuccessMessage();
+            // You may also want to update the DOM with the new study session details here
+        } else {
+            displayErrorMessage(data.error);
+        }
+    })
+    
+      .catch((error) => {
+          console.error('Error:', error);
+          displayErrorMessage('An error occurred while creating the session: ' + (error.message || 'Check console for details.'));
+      });
+    }
+
+    function displaySuccessMessage() {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.textContent = 'Successfully created study session!';
+        messageBox.style.color = 'green';
+    }
+
+    function displayErrorMessage(error) {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.textContent = error;
+        messageBox.style.color = 'red';
+    }
+  </script>
+</body>
+</html>
