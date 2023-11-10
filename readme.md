@@ -22,12 +22,12 @@ Linux and macOS:
 
 ```bash
 git clone https://github.com/yourusername/MindMingle.git
-cd projectname
+cd MindMingle
 npm install
 
 
 git clone https://github.com/yourusername/MindMingle.git
-cd projectname
+cd MindMingle
 npm install
 To use mindmingle follow steps:
 
