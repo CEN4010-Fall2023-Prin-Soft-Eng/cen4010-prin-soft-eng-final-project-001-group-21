@@ -40,15 +40,15 @@ DATABASE_URL=postgres://username:password@localhost:5432/databasename
 Remember to never commit your .env file to your version control system. This file should be ignored by your .gitignore.
 
 
-Contributing to <project_name>
-To contribute to <project_name>, follow these steps:
+Contributing to MindMingle
+To contribute to MindMingle, follow these steps:
 
 Fork this repository.
 Create a branch: git checkout -b <branch_name>.
 Make your changes and commit them: git commit -m '<commit_message>'
-Push to the original branch: git push origin <project_name>/<location>
+Push to the original branch: git push origin MindMingle/<location>
 Create the pull request.
 Alternatively, see the GitHub documentation on creating a pull request.
 
 Contributors
-Thanks to the following people who have contributed to this project:
+Thanks to the following people who have contributed to this project: Chris, Annaly, Tatyana, Imani
