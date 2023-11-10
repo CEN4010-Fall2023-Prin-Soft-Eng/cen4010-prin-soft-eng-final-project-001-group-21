@@ -1,10 +1,10 @@
-# Project Title
+# MindMingle
 
-A brief description of what this project does and who it's for.
+This app is designed to help individuals effectively manage and optimize their study routines.
+This is for individuals who lead busy lives and want to effectively manage their studying routine.
 
 ## Description
-
-Expand on the project title and what the project aims to achieve. This could be a paragraph or two, or a few bullet points.
+-The app is being built to empower individuals to lead more organized, productive studying habits. It aims to improve users' overall well-being by helping them achieve their studying goals.
 
 ## Prerequisites
 
