@@ -14,19 +14,19 @@ Before you begin, ensure you have met the following requirements:
 - You have a [PostgreSQL](https://www.postgresql.org/) database running locally or remotely.
 - You have a basic understanding of [JavaScript/TypeScript](https://developer.mozilla.org/docs/Web/JavaScript).
 
-## Installing <project_name>
+## Installing MindMingle
 
-To install <project_name>, follow these steps:
+To install MindMingle, follow these steps:
 
 Linux and macOS:
 
 ```bash
-git clone https://github.com/yourusername/projectname.git
+git clone https://github.com/yourusername/MindMingle.git
 cd projectname
 npm install
 
 
-git clone https://github.com/yourusername/projectname.git
+git clone https://github.com/yourusername/MindMingle.git
 cd projectname
 npm install
 To use mindmingle follow steps:
