@@ -29,7 +29,7 @@ npm install
 git clone https://github.com/yourusername/MindMingle.git
 cd MindMingle
 npm install
-To use mindmingle follow steps:
+To use MindMingle follow steps:
 
 npm start
 copy the .env.example file to a new file named .env and fill it with your environment-specific details
