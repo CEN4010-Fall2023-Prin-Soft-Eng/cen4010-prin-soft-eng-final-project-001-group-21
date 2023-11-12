@@ -1,205 +1,185 @@
 const express = require('express');
-const isAuthenticatedSession= require('./middleware/sessionAuth');
-//initialize database connection using knex
-const knexConfig=require('./knexfile').development;
-const knex = require('knex')(require('./knexfile').development);
-// Use destructuring assignment if you're exporting multiple functions
-const { getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
-console.log(createStudySession); // This should log the function if imported correctly
-
-require('dotenv').config();
-const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const db = require('./db/db-config'); // Ensure this path is correct for your project
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUI = require('swagger-ui-express');
-const { Pool } = require('pg');
+const path = require('path');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const session = require('express-session');
-const { hashPassword, checkPassword} = require('./utils/auth');
-// Initialize express-session
-const request = require('supertest');
-const router = express.Router();
+const { Pool } = require('pg');
+const { getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
+const db = require('./db/db-config');
+db.debug(true);
+console.log('Database URL:', process.env.DATABASE_URL);
 
+// Initialize Express app
+const app = express();
 
-app.use(session({
-  // Session configuration
-  secret: 'testsecret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
-
-app.get('/protected', isAuthenticatedSession, (req, res) => {
-  res.status(200).send('Access granted to protected route');
-});
-
-
-
-// CORS setup
+// Enable CORS
 app.use(cors());
-// Body-parser setup
+
+// Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(express.static('public'));
+// Session configuration
+app.use(session({
+  secret: 'your_secret_key', // Replace with your session secret
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set to true if using https
+}));
 
-knex.raw('SELECT 1')
-  .then(() => {
-    console.log('Database connected successfully. knex and .env are correct');
-  })
-  .catch((err) => {
-    console.error('Database connection failed:', err);
+// Set up PostgreSQL connection
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    // If you're using SSL, you'll need the following line
+    // ssl: { rejectUnauthorized: false }
   });
-
   
-
-// Adjust the Swagger definition for managing users instead of students
-const swaggerOptions = {
-  swaggerDefinition: {
-    info: {
-      title: 'User Server API',
-      version: '1.0.0'
-    }
-  },
-  apis: ['mindmingle.js'] // Make sure this points to your new file name
-};
- // EXPRESS ROUTES 
- app.post('/signup', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const hashedPassword = await hashPassword(password);
-        const newUser = await createUser({ username, password: hashedPassword });
-        res.redirect('/login.html');
-    } catch (error) {
-        if (error.code === '23505') {
-            // This code is for unique violation
-            res.status(409).send('Username already exists. Please choose another one.');
-        } else {
-            console.error(error);
-            res.status(500).send('Error during signup');
-        }
-    }
-});
-  
-// Login Route
+  /* LOGIN ROUTE */
 app.post('/login', async (req, res) => {
+    console.log('req.body: ',req.body)
     const { username, password } = req.body;
-  
     try {
+      // Retrieve user from the database using knex
       const user = await findUserByUsername(username);
-      
+      console.log('findUserByUsername called with:', username); // Add this line
       if (!user) {
         return res.status(401).send('No user found with this username');
       }
-      
+  
+      // Compare hashed password
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(401).send('Password incorrect');
       }
-      
-      req.session.userId = user.id; // Set the user ID in the session
-      res.redirect('/'); // Redirect to the root, which should be your main page
+  
+      // Create token  
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '48h' });
+      console.log('token variable: ', token)
+      res.json({token}); // Send the token to the client
+  
     } catch (err) {
-      console.error(err);
-      res.status(500).send('Error logging in user');
+      console.error('Error during login:', err);
+      res.status(500).send('Server error during login');
     }
-});
-
-  
-app.get('/logout', (req, res) => {
-    req.session.destroy(err => {
-      if (err) {
-        return res.redirect('/protected-route');
-      }
-  
-      res.clearCookie('connect.sid'); // this may vary based on your session cookie's name
-      res.redirect('/login.html');
-    });
   });
 
-/* PROTECTED ROUTES */
- 
-app.get('/protected', (req, res) => {
-  res.status(200).send('Access granted to protected route');
-});
 
-
-/*******************STUDY SESSIONS API***************************/
-// Express route for creating a new study session
- 
-app.post('/api/study-sessions', isAuthenticatedSession, async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(403).send('You must be logged in to create a study session.');
-    }
+/* SIGNUP ROUTE */
+  app.post('/signup', async (req, res) => {
+    const { username, password } = req.body;
     
-    // Destructure and validate the input
-    const { date, start_time, end_time, subject, notes } = req.body;
-    if (!date || !start_time || !end_time || !subject) { // Basic validation
-      return res.status(400).send('Missing required fields: date, start_time, end_time, subject.');
-    }
-  
-    // Further validation can be performed here (e.g., date format, time validation, etc.)
     try {
-        // Attempt to create a study session in the database
-        const newSession = await createStudySession({
-          user_id: req.session.userId,
-          date,
-          start_time,
-          end_time,
-          subject,
-          notes
-        });
-        res.status(201).json(newSession);
-      } catch (error) {
-        // Log the error for server side debugging
-        console.error("An error occurred:", error);
-      
-        // Handle specific known error types
-        if (error.name === 'ValidationError') {
-          res.status(400).json({ error: error.message });
-        } else if (error.name === 'UniqueConstraintError') {
-          res.status(409).json({ error: "A study session with the given details already exists." });
-        } else {
-          // For all other errors, send a generic error message
-          res.status(500).json({ error: "Could not create study session due to an unexpected error." });
+        // Check if user already exists
+        const existingUser = await findUserByUsername(username);
+        if (existingUser) {
+            return res.status(409).send('Username already taken'); // Conflict status
         }
-      }      
-  });
-  
 
-/******************* END STUDY SESSIONS API ************************/
-/******* CHECK USER *********/
-const path = require('path');
+        // Hash the password before saving it to the database
+        const hashedPassword = await bcrypt.hash(password, 10); // the number 10 is the salt rounds
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Now, a request to the root would automatically serve "index.html" from the "public" directory
-
-app.get('/', (req, res) => {
-    // You should adjust the path to where your `index.html` is actually located.
-    res.sendFile(path.join(__dirname, '/public/index.html'));
-});
-// check for a logged in user
-app.get('/session', (req, res) => {
-    if (req.session.userId) {
-      res.json({ userId: req.session.userId });
-    } else {
-      res.status(401).json({ userId: null });
+        // Create the user in the database
+        const newUser = await createUser({ username, password: hashedPassword });
+        
+        // Respond with a success message or token
+        return res.status(201).send('User successfully created');
+    } catch (err) {
+        console.error('Signup error:', err);
+        res.status(500).send('Error signing up user');
     }
-  });
-  
-
- 
-const PORT = process.env.PORT || 5678;
-app.use(express.static('public'));
-const server = app.listen(PORT, () => {
-   console.log(`Server is running on port ${PORT}...`);
-   console.log(`Webapp:   http://localhost:${PORT}/`);
-   console.log(`API Docs: http://localhost:${PORT}/api-docs`);
 });
 
-module.exports = { app, server }; // Keep exporting both for testing purposes
+/* STUDY SESSIONS */
+ 
+
+//Route to retrieve study sessions from the 'studysessions' table
+app.get('/api/study-sessions', authenticateToken, async (req, res) => {
+  crossOriginIsolated.log(req.user);
+  const userId = req.user.id;
+  console.log('User ID:', userId); // Check if userId is correctly retrieved
+  
+  try {
+    const userStudySessions = await db('study_sessions').select('*').where('user_id', userId);
+    console.log(userStudySessions.toString());
+    console.log('Fetched Study Sessions:', userStudySessions); // Check the fetched study sessions
+    res.json(userStudySessions);
+  } catch (err) {
+    console.error('Error fetching study sessions for user:', err);
+    res.status(500).json({ error: 'Server error while fetching study sessions for user' });
+  }
+});
+
+
+
+// Import the createStudySession function from db-queries.js
+app.post('/api/study-sessions', async (req, res) => {
+  try {
+    // Extract study session data from the request body
+    const { date, start_time, end_time, subject, notes } = req.body;
+    const userId= req.user.id; //Get from JWT token 
+
+    // Create an object with the session data
+    const sessionData = {
+      user_id: userId, //associate each session with user
+      date,
+      start_time,
+      end_time,
+      subject,
+      notes,
+    };
+
+    // Insert the study session data into the 'study_sessions' table
+    const createdSession = await createStudySession(sessionData);
+
+    // Return a success response with the created study session
+    res.status(201).json(createdSession[0]); // Assuming createdSession is an array with one item
+  } catch (err) {
+    console.error('Error creating study session:', err);
+    res.status(500).json({ error: 'Server error while creating study session' });
+  }
+});
+
+
+
+
+/*END STUDY SESSIONS API'S*/
+// Database configuration
+
+// Authentication middleware using JWT
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.sendStatus(401);
+
+  // Decoding token without verifying - should only be used for debugging
+  const decoded = jwt.decode(token);
+  console.log(decoded); // Check the decoded payload
+
+  // Verify token as usual
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    console.log(user); // This should display the decoded JWT payload
+    req.user = user;
+    next();
+  });
+}
+
+// API routes
+// (Define your API routes here)
+
+// Serve Vue application
+// Make sure the path to 'dist' is correct
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// Start server
+const PORT = process.env.PORT || 5678;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}...`);
+  console.log(`Webapp: http://localhost:${PORT}/`);
+});

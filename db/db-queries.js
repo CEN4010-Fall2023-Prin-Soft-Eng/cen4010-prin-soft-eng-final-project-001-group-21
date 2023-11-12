@@ -27,7 +27,8 @@ const findUserByUsername = (username) => {
 const createStudySession = (sessionData) => {
     return db('study_sessions').insert(sessionData).returning('*');
   };
-  
+
+
 module.exports = {
   getUsers,
   findUserById,

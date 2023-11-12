@@ -1,4 +1,4 @@
-// ButtonComponent.vue
+
 <template>
   <button :class="{ active: isActive }" @click="onClick" @mouseenter="grow" @mouseleave="shrink">
     <slot></slot>
@@ -40,37 +40,3 @@ button.active {
   border-color: #367a38; /* darker green border for some depth */
 }
 </style>
-
-// App.vue (Main file)
-<template>
-  <div id="app">
-    <ButtonComponent :isActive="currentPage === 'Home'" @button-click="currentPage = 'Home'">Home</ButtonComponent>
-    <ButtonComponent :isActive="currentPage === 'Calendar'" @button-click="currentPage = 'Calendar'">Calendar</ButtonComponent>
-
-    <component :is="currentPageComponent" />
-  </div>
-</template>
-
-<script>
-import ButtonComponent from './ButtonComponent.vue';
-import HomePage from './HomePage.vue';
-import CalendarPage from './CalendarPage.vue';
-
-export default {
-  components: {
-    ButtonComponent,
-    HomePage,
-    CalendarPage
-  },
-  computed: {
-    currentPageComponent() {
-      return this.currentPage === 'Home' ? HomePage : CalendarPage;
-    },
-  },
-  data() {
-    return {
-      currentPage: 'Home',
-    };
-  },
-}
-</script>

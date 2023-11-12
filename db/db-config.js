@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const knex = require('knex');
 
 const connection = process.env.DATABASE_URL ? {
