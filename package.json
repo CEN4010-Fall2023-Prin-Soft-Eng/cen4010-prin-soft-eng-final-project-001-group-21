@@ -13,7 +13,7 @@
     "start": "node mindmingle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "main": "studentserver.js",
+  "main": "mindmingle.js",
   "dependencies": {
     "18": "^0.0.0",
     "all": "^0.0.0",
