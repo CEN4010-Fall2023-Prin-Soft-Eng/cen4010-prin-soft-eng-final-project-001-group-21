@@ -42,7 +42,24 @@
   <button class="button">Home</button>
   <button class="button" onclick="location.href='calendar.html'">Calendar</button>
   <button class="button" onclick="location.href='study-sessions.html'">Focus Session</button>
-
+  
+  <div>
+  <script>
+    // Fetch the session information from the server
+    fetch('/session')
+      .then(response => {
+        if (!response.ok) {
+          // If the user is not logged in, redirect to the login page
+          window.location.href = '/login.html';
+        }
+        // If the user is logged in, you can fetch the user ID like so:
+        // return response.json();
+      })
+      .catch(err => {
+        console.error('Error checking session', err);
+        window.location.href = '/login.html';
+      });
+    </script>
 </div> 
 </body>
 </html>
