@@ -96,8 +96,8 @@ app.post('/login', async (req, res) => {
 
 //Route to retrieve study sessions from the 'studysessions' table
 app.get('/api/study-sessions', authenticateToken, async (req, res) => {
-  crossOriginIsolated.log(req.user);
-  const userId = req.user.id;
+  console.log(req.user);
+  const userId = req.user.userId;
   console.log('User ID:', userId); // Check if userId is correctly retrieved
   
   try {
@@ -114,11 +114,11 @@ app.get('/api/study-sessions', authenticateToken, async (req, res) => {
 
 
 // Import the createStudySession function from db-queries.js
-app.post('/api/study-sessions', async (req, res) => {
+app.post('/api/study-sessions', authenticateToken, async (req, res) => {
   try {
     // Extract study session data from the request body
     const { date, start_time, end_time, subject, notes } = req.body;
-    const userId= req.user.id; //Get from JWT token 
+    const userId = req.user.userId;; //Get from JWT token 
 
     // Create an object with the session data
     const sessionData = {
@@ -160,8 +160,8 @@ function authenticateToken(req, res, next) {
   // Verify token as usual
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
-    console.log(user); // This should display the decoded JWT payload
     req.user = user;
+    console.log('Decoded JWT payload:', user); // This should display the decoded JWT payload
     next();
   });
 }
