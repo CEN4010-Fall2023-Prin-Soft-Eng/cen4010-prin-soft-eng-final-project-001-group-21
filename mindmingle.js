@@ -171,10 +171,10 @@ function authenticateToken(req, res, next) {
 
 // Serve Vue application
 // Make sure the path to 'dist' is correct
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'homePage.html'));
 });
 
 // Start server
