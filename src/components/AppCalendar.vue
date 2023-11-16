@@ -113,7 +113,7 @@ export default {
     });
     this.Study_Sessions = response.data;
   } catch (error) {
-    console.error('Error fetching study sessions:', error);
+    console.error('Error fetching study sessions:', error.response.data);
   }
 },
 

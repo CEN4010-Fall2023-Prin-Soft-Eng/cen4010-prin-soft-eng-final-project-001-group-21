@@ -1,0 +1,14 @@
+
+> mindmingle@1.0.0 build
+> vue-cli-service build mindmindgle.js
+
+All browser targets in the browserslist configuration have supported ES module.
+Therefore we don't build two separate bundles for differential loading.
+
+
+ ERROR  Failed to compile with 1 error12:09:45 AM
+
+ error  
+
+Module not found: Error: Can't resolve '/Users/tatyanadorcinvil/Documents/GitHub/cen4010-prin-soft-eng-final-project-final-project-001-group-21/mindmindgle.js' in '/Users/tatyanadorcinvil/Documents/GitHub/cen4010-prin-soft-eng-final-project-final-project-001-group-21'
+
