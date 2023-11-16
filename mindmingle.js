@@ -106,29 +106,25 @@ async function createUser({ username, password, email }) {
 
 // SIGNUP ROUTE
 app.post('/signup', async (req, res) => {
-  const { username, password,  } = req.body;
+  const { username, password, email  } = req.body;
   
   try {
-      const existingUser = await findUserByUsername(username);
-      if (existingUser) {
-          return res.status(409).send('Username already taken');
-      }
+    const existingUser = await findUserByUsername(username);
+    if (existingUser) {
+        return res.status(409).send('Username already taken');
+    }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
- // ...
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-// Create the user by calling the createUser function
-const userId = await createUser({ username, password: hashedPassword, email });
+    // Create the user by calling the createUser function
+    const userId = await createUser({ username, password: hashedPassword, email });
 
-return res.status(201).send('User successfully created');
-// ...
+    return res.status(201).send('User successfully created');
+} catch (err) {
+    console.error('Signup error:', err);
+    res.status(500).send('Error signing up user');
+}
 
-      
-      return res.status(201).send('User successfully created');
-  } catch (err) {
-      console.error('Signup error:', err);
-      res.status(500).send('Error signing up user');
-  }
 });
 
 
