@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'default_secret_key',
+  secret: process.env.SESSION_SECRET || 'mindovermatter',
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false } // Set to true if using https
@@ -66,7 +66,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).send('Password incorrect');
     }
 
-    const secretKey = process.env.JWT_SECRET || 'default_secret_key'; // Use the correct secret key
+    const secretKey = process.env.JWT_SECRET || 'mindovermatter'; // Use the correct secret key
     const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '48h' });
     res.json({ token });
 
@@ -136,7 +136,7 @@ function authenticateToken(req, res, next) {
   }
 
   // Verify a JWT token using the correct secretKey
-  const secretKey = process.env.JWT_SECRET || 'default_secret_key'; // Use the correct secret key
+  const secretKey = process.env.JWT_SECRET || 'mind'; // Use the correct secret key
   jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
       console.error('JWT verification error:', err);
