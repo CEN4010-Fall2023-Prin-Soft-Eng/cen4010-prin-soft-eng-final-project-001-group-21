@@ -75,9 +75,38 @@ app.post('/login', async (req, res) => {
     }
 });
 
+/// CREATE USER 
+// Example createUser function using a PostgreSQL database
+async function createUser({ username, password, email }) {
+  const client = await pool.connect(); // Assuming you have a PostgreSQL pool
+
+  try {
+      // Insert the new user into the database
+      const query = `
+          INSERT INTO users (username, password, email)
+          VALUES ($1, $2, $3)
+          RETURNING id;
+      `;
+
+      const values = [username, password, email];
+      const result = await client.query(query, values);
+
+      if (result.rows.length === 1) {
+          // User successfully created
+          return result.rows[0].id;
+      } else {
+          // Insert failed
+          throw new Error('User creation failed');
+      }
+  } finally {
+      client.release(); // Release the database connection
+  }
+}
+
+
 // SIGNUP ROUTE
 app.post('/signup', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password,  } = req.body;
   
   try {
       const existingUser = await findUserByUsername(username);
@@ -86,9 +115,14 @@ app.post('/signup', async (req, res) => {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      // You should implement createUser function or the logic to insert the user into the database here.
-      // Example:
-      // await createUser({ username, password: hashedPassword });
+ // ...
+
+// Create the user by calling the createUser function
+const userId = await createUser({ username, password: hashedPassword, email });
+
+return res.status(201).send('User successfully created');
+// ...
+
       
       return res.status(201).send('User successfully created');
   } catch (err) {
