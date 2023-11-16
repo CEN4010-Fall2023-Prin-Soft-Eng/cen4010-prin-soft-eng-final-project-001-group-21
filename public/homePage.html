@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Mind Mingle - Home</title>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>Welcome, <span id="username"></span>!</h1>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+        <h2>Mind Mingle</h2>
+        <p>This is the home page of Mind Mingle. Explore and connect with others!</p>
+
+        <!-- Display user-specific content -->
+        <div id="user-content">
+            <!-- You can add personalized content here based on user data -->
+        </div>
+    </main>
+  
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2023 Mind Mingle. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Retrieve the username from local storage
+        const username = localStorage.getItem('username');
+
+        // Display the username on the page if it exists
+        if (username) {
+            document.getElementById('username').textContent = username;
+        }
+
+        // You can fetch user-specific data here and update the page content
+        // Example: Fetch user data from an API and display it on the page
+        // Replace this with your actual API endpoint and data structure
+        $.ajax({
+            url: '/api/user', // Replace with your API endpoint
+            type: 'GET',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`, // Send the user's JWT token for authentication
+            },
+            success: function(response) {
+                // Update the user-specific content based on the response
+                const userContent = document.getElementById('user-content');
+                userContent.innerHTML = `
+                  
+                `;
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching user data:', error);
+                alert('An error occurred while fetching user data.');
+            }
+        });
+    </script>
+</body>
+</html>

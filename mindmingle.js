@@ -66,8 +66,11 @@ app.post('/login', async (req, res) => {
       return res.status(401).send('Password incorrect');
     }
 
+    // Fetch the user's name from the database here
+    const userName = user.name; // Replace 'name' with the actual field name
+
     const secretKey = process.env.JWT_SECRET || 'mindovermatter'; // Use the correct secret key
-    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '48h' });
+    const token = jwt.sign({ userId: user.id, userName }, secretKey, { expiresIn: '48h' });
     res.json({ token });
 
   } catch (err) {
@@ -75,6 +78,7 @@ app.post('/login', async (req, res) => {
     res.status(500).send('Server error during login');
   }
 });
+
 
 /// CREATE USER
 // Example createUser function using a PostgreSQL database
@@ -152,6 +156,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// Define a route for the personalized home page
+app.get('/homePage', authenticateToken, (req, res) => {
+  // Serve the 'homePage.html' file when the user is authenticated
+  res.sendFile(path.join(__dirname, 'public', 'homePage.html'));
 });
 
 // Start server

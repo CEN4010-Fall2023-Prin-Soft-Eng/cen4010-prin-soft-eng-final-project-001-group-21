@@ -96,38 +96,39 @@
         </a>
     </div>
     <script>
-        $(document).ready(function() {
-            $('#login-form').on('submit', function(event) {
-                event.preventDefault(); // Prevent the default form submission
+        // Inside your document ready function
+$(document).ready(function() {
+    $('#login-form').on('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
 
-                var userData = {
-                    username: $('#username').val(),
-                    password: $('#password').val(),
-                };
+        var userData = {
+            username: $('#username').val(),
+            password: $('#password').val(),
+        };
 
-                $.ajax({
-                    url: '/login', // The URL to your server's login route
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(userData),
-                    success: function(response) {
-                        if (response.token) {
-                            // Save the token in local storage or a cookie for future authenticated requests
-                            localStorage.setItem('token', response.token);
+        $.ajax({
+            url: '/login', // The URL to your server's login route
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(userData),
+            success: function(response) {
+                console.log('Login successful:', response);
 
-                            // Redirect to the home page or another authorized page
-                            window.location.href = '/homePage.html';
-                        } else {
-                            alert('Login failed. Please check your credentials.');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Login error:', error);
-                        alert('An error occurred during login.');
-                    }
-                });
-            });
+                // Store username and user's name in local storage
+                localStorage.setItem('username', userData.username);
+                localStorage.setItem('name', response.userName); // Store the user's name from the response
+
+                // Redirect to the home page or show a success message
+                window.location.href = '/homePage.html'; // Change to your home page URL
+            },
+            error: function(xhr, status, error) {
+                console.error('Login error:', error);
+                alert('An error occurred during login.');
+            }
         });
+    });
+});
+
     </script>
 </body>
 </html>
