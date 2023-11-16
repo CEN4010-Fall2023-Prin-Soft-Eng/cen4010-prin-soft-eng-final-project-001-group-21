@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { Pool } = require('pg'); // Import Pool from 'pg' directly
+const { Pool } = require('pg');
 const session = require('express-session');
 require('dotenv').config();
 
@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'default_secret_key', 
+  secret: process.env.SESSION_SECRET || 'default_secret_key',
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false } // Set to true if using https
@@ -54,64 +54,64 @@ const findUserByUsername = async (username) => {
 
 // LOGIN ROUTE
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-      const user = await findUserByUsername(username);
-      if (!user) {
-        return res.status(401).send('No user found with this username');
-      }
-  
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).send('Password incorrect');
-      }
-  
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '48h' });
-      res.json({ token });
-  
-    } catch (err) {
-      console.error('Error during login:', err);
-      res.status(500).send('Server error during login');
+  const { username, password } = req.body;
+  try {
+    const user = await findUserByUsername(username);
+    if (!user) {
+      return res.status(401).send('No user found with this username');
     }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).send('Password incorrect');
+    }
+
+    const secretKey = process.env.JWT_SECRET || 'default_secret_key'; // Use the correct secret key
+    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '48h' });
+    res.json({ token });
+
+  } catch (err) {
+    console.error('Error during login:', err);
+    res.status(500).send('Server error during login');
+  }
 });
 
-/// CREATE USER 
+/// CREATE USER
 // Example createUser function using a PostgreSQL database
 async function createUser({ username, password, email }) {
   const client = await pool.connect(); // Assuming you have a PostgreSQL pool
 
   try {
-      // Insert the new user into the database
-      const query = `
-          INSERT INTO users (username, password, email)
-          VALUES ($1, $2, $3)
-          RETURNING id;
-      `;
+    // Insert the new user into the database
+    const query = `
+      INSERT INTO users (username, password, email)
+      VALUES ($1, $2, $3)
+      RETURNING id;
+    `;
 
-      const values = [username, password, email];
-      const result = await client.query(query, values);
+    const values = [username, password, email];
+    const result = await client.query(query, values);
 
-      if (result.rows.length === 1) {
-          // User successfully created
-          return result.rows[0].id;
-      } else {
-          // Insert failed
-          throw new Error('User creation failed');
-      }
+    if (result.rows.length === 1) {
+      // User successfully created
+      return result.rows[0].id;
+    } else {
+      // Insert failed
+      throw new Error('User creation failed');
+    }
   } finally {
-      client.release(); // Release the database connection
+    client.release(); // Release the database connection
   }
 }
 
-
 // SIGNUP ROUTE
 app.post('/signup', async (req, res) => {
-  const { username, password, email  } = req.body;
-  
+  const { username, password, email } = req.body;
+
   try {
     const existingUser = await findUserByUsername(username);
     if (existingUser) {
-        return res.status(409).send('Username already taken');
+      return res.status(409).send('Username already taken');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -120,62 +120,14 @@ app.post('/signup', async (req, res) => {
     const userId = await createUser({ username, password: hashedPassword, email });
 
     return res.status(201).send('User successfully created');
-} catch (err) {
+  } catch (err) {
     console.error('Signup error:', err);
     res.status(500).send('Error signing up user');
-}
-
+  }
 });
-
 
 // STUDY SESSIONS ROUTES
 // Authenticate Token Middleware
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
-app.get('/api/study-sessions', authenticateToken, async (req, res) => {
-  const userId = req.user.userId;
-  try {
-    const userStudySessions = await db('study_sessions').select('*').where('user_id', userId);
-    res.json(userStudySessions);
-  } catch (err) {
-    console.error('Error fetching study sessions for user:', err);
-    res.status(500).json({ error: 'Server error while fetching study sessions for user' });
-  }
-});
-
-// Create Study Session
-app.post('/api/study-sessions', authenticateToken, async (req, res) => {
-  try {
-    const { date, start_time, end_time, subject, notes } = req.body;
-    const userId = req.user.userId; 
-
-    const sessionData = {
-      user_id: userId, 
-      date,
-      start_time,
-      end_time,
-      subject,
-      notes,
-    };
-
-    const createdSession = await createStudySession(sessionData);
-    res.status(201).json(createdSession[0]);
-  } catch (err) {
-    console.error('Error creating study session:', err);
-    res.status(500).json({ error: 'Server error while creating study session' });
-  }
-});
-// Error handling for the authenticateToken middleware
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -183,12 +135,14 @@ function authenticateToken(req, res, next) {
     return res.sendStatus(401); // Unauthorized
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  // Verify a JWT token using the correct secretKey
+  const secretKey = process.env.JWT_SECRET || 'default_secret_key'; // Use the correct secret key
+  jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
-      console.error('Error verifying token:', err);
+      console.error('JWT verification error:', err);
       return res.sendStatus(403); // Forbidden
     }
-    req.user = user;
+    req.user = decoded;
     next();
   });
 }
