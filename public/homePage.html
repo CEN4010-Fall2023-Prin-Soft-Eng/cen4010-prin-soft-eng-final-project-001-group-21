@@ -13,10 +13,13 @@
 
         /* Header Styles */
         header {
-            background-color: #3333339e;
-            color: white;
+            background-image: url('books-2.png'); /* Set the background image */
+            background-repeat: no-repeat; /* Prevent repeating the image */
+            background-size: cover; /* Cover the entire header */
+            color: rgb(255, 255, 255);
             padding: auto;
             text-align: center;
+            position: relative; /* Add this to make the glitter container relative */
         }
 
         /* Navigation Styles */
@@ -61,7 +64,7 @@
         }
 
         p {
-            color: #666;
+            color: #000000eb;
             font-size: 16px;
         }
 
@@ -90,13 +93,14 @@
 
         /* Flickering Light Effect */
         img {
-            margin-bottom: -100px;
+            margin-bottom: -20px;
+            margin-top: 80px;
             animation: flicker 0.9s infinite alternate;
         }
 
         @keyframes flicker {
             0% {
-                opacity: 0.6;
+                opacity: 0.5;
             }
             100% {
                 opacity: 1;
@@ -108,7 +112,7 @@
 <body>
     <!-- Header Section -->
     <header>
-        <img src="mindmingle.png" alt="Mind Mingle Logo" width="500px" height= auto >
+        <img src="mindmingle1.png" alt="Mind Mingle Logo" width="600px" height= auto >
     </header>
 
     <!-- Navigation Bar -->
