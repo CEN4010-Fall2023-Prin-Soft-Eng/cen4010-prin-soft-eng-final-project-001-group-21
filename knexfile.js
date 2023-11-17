@@ -6,7 +6,7 @@ module.exports = {
     connection: {
       host: process.env.DB_HOST || 'localhost',
       user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASS || 'Rubedo1989',
+      password: process.env.DB_PASS || 'mind12345',
       database: process.env.DB_NAME || 'mindmingle'
     },
     migrations: {
