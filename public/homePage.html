@@ -87,8 +87,20 @@
             color: #428bca;
             font-weight: bold;
         }
+
+        /* Flickering Light Effect */
         img {
             margin-bottom: -100px;
+            animation: flicker 0.9s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+            }
         }
     </style>
     <title>Mind Mingle - Home</title>
