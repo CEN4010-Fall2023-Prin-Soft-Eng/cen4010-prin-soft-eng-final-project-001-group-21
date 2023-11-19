@@ -130,6 +130,20 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+// GET route to retrieve usernames and emails of all users
+app.get('/users', async (req, res) => {
+  try {
+    const query = 'SELECT username, email FROM users';
+    const users = await queryDatabase(query);
+
+    // Send the list of users as a JSON response
+    res.json(users);
+  } catch (err) {
+    console.error('Error retrieving users:', err);
+    res.status(500).send('Server error while retrieving users');
+  }
+});
+
 // STUDY SESSIONS ROUTES
 // Authenticate Token Middleware
 function authenticateToken(req, res, next) {
