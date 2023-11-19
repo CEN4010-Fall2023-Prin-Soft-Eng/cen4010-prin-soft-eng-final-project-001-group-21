@@ -2,17 +2,130 @@
 <html>
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        /* Header Styles */
+        header {
+            background-image: url('books-2.png'); /* Set the background image */
+            background-repeat: no-repeat; /* Prevent repeating the image */
+            background-size: cover; /* Cover the entire header */
+            color: rgb(255, 255, 255);
+            padding: auto;
+            text-align: center;
+            position: relative; /* Add this to make the glitter container relative */
+        }
+
+        /* Navigation Styles */
+        ul.navbar {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            overflow: hidden;
+            text-align: center; /* Center the menu items */
+        }
+
+        li.nav-item {
+            display: inline-block; /* Display menu items in a row */
+            margin: 0 10px; /* Add space between menu items */
+        }
+
+        li.nav-item a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        li.nav-item a:hover {
+            background-color: #428bca;
+        }
+
+        /* Main Content Styles */
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        p {
+            color: #000000eb;
+            font-size: 16px;
+        }
+
+        /* User Content Styles */
+        #user-content {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Personalized Username Styles */
+        #username {
+            color: #428bca;
+            font-weight: bold;
+        }
+
+        /* Flickering Light Effect */
+        img {
+            margin-bottom: -20px;
+            margin-top: 80px;
+            animation: flicker 0.9s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
     <title>Mind Mingle - Home</title>
 </head>
 <body>
     <!-- Header Section -->
     <header>
-        <h1>Welcome, <span id="username"></span>!</h1>
+        <img src="mindmingle1.png" alt="Mind Mingle Logo" width="600px" height= auto >
     </header>
+
+    <!-- Navigation Bar -->
+    <ul class="navbar">
+        <li class="nav-item"><a href="#">Home</a></li>
+        <li class="nav-item"><a href="#">Focus Timer</a></li>
+        <li class="nav-item"><a href="#">Calendar</a></li>
+        <li class="nav-item"><a href="#">Search Study Deadline</a></li>
+    </ul>
 
     <!-- Main Content Section -->
     <main>
-        <h2>Mind Mingle</h2>
+        <h2>Welcome, <span id="username"></span>!</h2>
         <p>This is the home page of Mind Mingle. Explore and connect with others!</p>
 
         <!-- Display user-specific content -->
