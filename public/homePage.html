@@ -142,70 +142,75 @@
     <footer>
         <p>&copy; 2023 Mind Mingle. All rights reserved.</p>
     </footer>
-
+    
     <script>
         // Retrieve the username from local storage
-const username = localStorage.getItem('username');
-
-// Display the username on the page if it exists
-if (username) {
-    document.getElementById('username').textContent = username;
-}
-
-// Function to record user activity
-function recordActivity(user_id) {
-    // Implement code to send a POST request to your server's '/record-activity' route
-    // Pass user_id to the server to record activity
-    // Handle success and error responses appropriately
-    $.ajax({
-        url: '/record-activity', // Replace with the correct server endpoint
-        type: 'POST',
-        data: { user_id: user_id }, // Send the user's ID to the server
-        success: function(response) {
-            // Handle success (optional)
-        },
-        error: function(xhr, status, error) {
-            console.error('Error recording activity:', error);
-            // Handle error (optional)
+        const username = localStorage.getItem('username');
+    
+        // Display the username on the page if it exists
+        if (username) {
+            document.getElementById('username').textContent = username;
         }
-    });
-}
-
-// Function to display streak information
-function displayStreak(user_id) {
-    // Implement code to send a GET request to your server's '/get-streak' route
-    // Pass user_id to retrieve streak information
-    // Update HTML elements with streak data (e.g., streak count, friendly message)
-    // Handle success and error responses appropriately
-    $.ajax({
-        url: '/get-streak', // Replace with the correct server endpoint
-        type: 'GET',
-        data: { user_id: user_id }, // Send the user's ID to the server
-        success: function(response) {
-            // Update the streak count and message
-            const streakCountElement = document.getElementById('streak-count');
-            const streakMessageElement = document.getElementById('streak-message');
-
-            streakCountElement.textContent = response.streakCount;
-            streakMessageElement.textContent = response.message;
-
-            // Show the streak section (if not already visible)
-            const streakSection = document.getElementById('streak-section');
-            streakSection.style.display = 'block';
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching streak data:', error);
-            // Handle error (optional)
+    
+        // Function to record user activity
+        function recordActivity(user_id) {
+            // Implement code to send a POST request to your server's '/record-activity' route
+            // Pass user_id to the server to record activity
+            // Handle success and error responses appropriately
+            $.ajax({
+                url: '/record-activity', // Replace with the correct server endpoint
+                type: 'POST',
+                data: { user_id: user_id }, // Send the user's ID to the server
+                success: function(response) {
+                    // Handle success (optional)
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error recording activity:', error);
+                    // Handle error (optional)
+                }
+            });
         }
-    });
-}
-
-// Get the user's ID from somewhere (e.g., local storage)
-const user_id = localStorage.getItem('user_id');
-
-// Call functions when the page loads
-recordActivity(user_id);
-displayStreak(user_id);
+    
+        // Function to display streak information
+        function displayStreak(user_id) {
+            // Implement code to send a GET request to your server's '/get-streak' route
+            // Pass user_id to retrieve streak information
+            // Update HTML elements with streak data (e.g., streak count, friendly message)
+            // Handle success and error responses appropriately
+            $.ajax({
+                url: '/get-streak', // Replace with the correct server endpoint
+                type: 'GET',
+                data: { user_id: user_id }, // Send the user's ID to the server
+                success: function(response) {
+                    // Update the streak count and message
+                    const streakCountElement = document.getElementById('streak-count');
+                    const streakMessageElement = document.getElementById('streak-message');
+    
+                    streakCountElement.textContent = response.streakCount;
+                    streakMessageElement.textContent = response.message;
+    
+                    // Show the streak section (if not already visible)
+                    const streakSection = document.getElementById('streak-section');
+                    streakSection.style.display = 'block';
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching streak data:', error);
+                    // Handle error (optional)
+                }
+            });
+        }
+    
+        // Get the user's ID from local storage and check if it's valid
+        const user_id = parseInt(localStorage.getItem('user_id'));
+    
+        if (!isNaN(user_id)) {
+            // The user_id is a valid integer, proceed with the AJAX requests.
+            recordActivity(user_id);
+            displayStreak(user_id);
+        } else {
+            // Handle the case where user_id is not a valid integer (e.g., show an error message).
+            console.error('Invalid user_id:', localStorage.getItem('user_id'));
+        }
 
     </script>
 </body>
