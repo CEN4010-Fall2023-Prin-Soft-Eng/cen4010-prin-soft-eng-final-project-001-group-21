@@ -112,7 +112,7 @@
 <body>
     <!-- Header Section -->
     <header>
-        <img src="mindmingle1.png" alt="Mind Mingle Logo" width="600px" height= auto >
+        <img src="mindmingle1.png" alt="Mind Mingle Logo" width="600px" height="auto">
     </header>
 
     <!-- Navigation Bar -->
@@ -127,13 +127,17 @@
     <main>
         <h2>Welcome, <span id="username"></span>!</h2>
         <p>This is the home page of Mind Mingle. Explore and connect with others!</p>
-
-        <!-- Display user-specific content -->
-        <div id="user-content">
-            <!-- You can add personalized content here based on user data -->
+           
+        <!-- Streak Section -->
+        <div id="streak-section">
+            <p>Your Current Streak: <span id="streak-count"></span></p>
+            <p id="streak-message"></p>
         </div>
     </main>
-  
+
+
+
+
     <!-- Footer Section -->
     <footer>
         <p>&copy; 2023 Mind Mingle. All rights reserved.</p>
@@ -141,34 +145,68 @@
 
     <script>
         // Retrieve the username from local storage
-        const username = localStorage.getItem('username');
+const username = localStorage.getItem('username');
 
-        // Display the username on the page if it exists
-        if (username) {
-            document.getElementById('username').textContent = username;
+// Display the username on the page if it exists
+if (username) {
+    document.getElementById('username').textContent = username;
+}
+
+// Function to record user activity
+function recordActivity(user_id) {
+    // Implement code to send a POST request to your server's '/record-activity' route
+    // Pass user_id to the server to record activity
+    // Handle success and error responses appropriately
+    $.ajax({
+        url: '/record-activity', // Replace with the correct server endpoint
+        type: 'POST',
+        data: { user_id: user_id }, // Send the user's ID to the server
+        success: function(response) {
+            // Handle success (optional)
+        },
+        error: function(xhr, status, error) {
+            console.error('Error recording activity:', error);
+            // Handle error (optional)
         }
+    });
+}
 
-        // You can fetch user-specific data here and update the page content
-        // Example: Fetch user data from an API and display it on the page
-        // Replace this with your actual API endpoint and data structure
-        $.ajax({
-            url: '/api/user', // Replace with your API endpoint
-            type: 'GET',
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`, // Send the user's JWT token for authentication
-            },
-            success: function(response) {
-                // Update the user-specific content based on the response
-                const userContent = document.getElementById('user-content');
-                userContent.innerHTML = `
-                  
-                `;
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching user data:', error);
-                alert('An error occurred while fetching user data.');
-            }
-        });
+// Function to display streak information
+function displayStreak(user_id) {
+    // Implement code to send a GET request to your server's '/get-streak' route
+    // Pass user_id to retrieve streak information
+    // Update HTML elements with streak data (e.g., streak count, friendly message)
+    // Handle success and error responses appropriately
+    $.ajax({
+        url: '/get-streak', // Replace with the correct server endpoint
+        type: 'GET',
+        data: { user_id: user_id }, // Send the user's ID to the server
+        success: function(response) {
+            // Update the streak count and message
+            const streakCountElement = document.getElementById('streak-count');
+            const streakMessageElement = document.getElementById('streak-message');
+
+            streakCountElement.textContent = response.streakCount;
+            streakMessageElement.textContent = response.message;
+
+            // Show the streak section (if not already visible)
+            const streakSection = document.getElementById('streak-section');
+            streakSection.style.display = 'block';
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching streak data:', error);
+            // Handle error (optional)
+        }
+    });
+}
+
+// Get the user's ID from somewhere (e.g., local storage)
+const user_id = localStorage.getItem('user_id');
+
+// Call functions when the page loads
+recordActivity(user_id);
+displayStreak(user_id);
+
     </script>
 </body>
 </html>

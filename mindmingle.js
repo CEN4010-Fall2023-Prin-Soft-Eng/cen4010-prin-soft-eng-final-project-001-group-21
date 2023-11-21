@@ -144,6 +144,76 @@ app.get('/users', async (req, res) => {
   }
 });
 
+function calculateStreak(activityTimestamps) {
+  let streakCount = 0;
+  let currentStreak = 0;
+  const threshold = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  for (let i = 0; i < activityTimestamps.length - 1; i++) {
+    const currentTime = new Date(activityTimestamps[i]);
+    const nextTime = new Date(activityTimestamps[i + 1]);
+    const timeDifference = nextTime - currentTime;
+
+    if (timeDifference <= threshold) {
+      currentStreak++;
+    } else {
+      // Streak is broken, reset the current streak
+      currentStreak = 0;
+    }
+
+    if (currentStreak > streakCount) {
+      streakCount = currentStreak;
+    }
+  }
+
+  return streakCount;
+}
+
+// Record user activity and update streaks
+app.post('/record-activity', async (req, res) => {
+  const { user_id } = req.body;
+  
+  try {
+    // Implement logic to record user activity and update streaks in the database here
+    // Example: Store the activity timestamp in the database
+    const timestamp = new Date(); // Replace this with the actual timestamp
+    // Insert the timestamp into the database with the user_id
+    const query = 'INSERT INTO user_activity (user_id, activity_timestamp) VALUES ($1, $2)';
+    const values = [user_id, timestamp];
+    await queryDatabase(query, values);
+
+    // Respond with a success message
+    res.status(200).json({ message: 'Activity recorded successfully.' });
+  } catch (error) {
+    console.error('Error recording activity:', error);
+    res.status(500).json({ error: 'An error occurred while recording activity.' });
+  }
+});
+
+
+// Calculate and retrieve streak information for a user
+app.get('/get-streak', async (req, res) => {
+  const { user_id } = req.query;
+  
+  try {
+    // Implement logic to calculate and retrieve streak information based on user_id
+    // Retrieve user activity timestamps from the database
+    const query = 'SELECT activity_timestamp FROM user_activity WHERE user_id = $1 ORDER BY activity_timestamp ASC';
+    const activityTimestamps = await queryDatabase(query, [user_id]);
+    
+    // Calculate the streak based on activity timestamps
+    const streakCount = calculateStreak(activityTimestamps);
+
+    // Respond with streak data (e.g., current streak count, friendly message, etc.)
+    res.status(200).json({ streakCount, message: `Keep up the good work with a streak of ${streakCount}!` });
+  } catch (error) {
+    console.error('Error retrieving streak data:', error);
+    res.status(500).json({ error: 'An error occurred while retrieving streak data.' });
+  }
+});
+
+
+
 // STUDY SESSIONS ROUTES
 // Authenticate Token Middleware
 function authenticateToken(req, res, next) {
