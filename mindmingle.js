@@ -65,33 +65,33 @@ app.post('/login', async (req, res) => {
     }
   });
 
-
-/* SIGNUP ROUTE */
+  async function findUserByEmail(email) {
+    try {
+      const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+      return result.rows[0]; // Assuming email is unique and returns only one user
+    } catch (err) {
+      console.error('Error in findUserByEmail:', err);
+      throw err; // Rethrow the error to be handled in the calling function
+    }
+  }
+//SIGNUP ROUTE
 app.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   
   try {
-      // Check if user already exists
       const existingUser = await findUserByUsername(username);
       if (existingUser) {
-          return res.status(409).send('Username already taken'); // Conflict status
+          return res.status(409).send('Username already taken');
       }
 
-      // Check if email is already used
-      // You need to implement findUserByEmail in your db-queries
       const existingEmail = await findUserByEmail(email);
       if (existingEmail) {
-          return res.status(409).send('Email already in use'); // Conflict status
+          return res.status(409).send('Email already in use');
       }
 
-      // Hash the password before saving it to the database
-      const hashedPassword = await bcrypt.hash(password, 10); // the number 10 is the salt rounds
-
-      // Create the user in the database
-      const newUser = await createUser({ username, email, password: hashedPassword });
-      
-      // Respond with a success message or token
-      return res.status(201).send('User successfully created');
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userId = await createUser({ username, email, password: hashedPassword });
+      res.status(201).send({ userId, message: 'User successfully created' });
   } catch (err) {
       console.error('Signup error:', err);
       res.status(500).send('Error signing up user');

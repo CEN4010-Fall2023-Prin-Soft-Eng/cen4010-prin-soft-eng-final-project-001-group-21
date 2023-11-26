@@ -34,11 +34,21 @@ export default {
     const confirmPassword = ref('');
     const router = useRouter();
 
+    const isEmailValid = (email) => {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email.toLowerCase());
+    }
+
     const signup = async () => {
-      // Form validation logic here (if needed)
+      if (!isEmailValid(email.value)) {
+        // Show a more integrated error message instead of alert
+        console.error('Invalid email format');
+        return;
+      }
 
       if (password.value !== confirmPassword.value) {
         // Show a more integrated error message instead of alert
+        console.error('Passwords do not match');
         return;
       }
 
@@ -49,7 +59,6 @@ export default {
           password: password.value
         });
         console.log('Signup successful', response);
-        // Reset form fields here if needed
         router.push('/login');
       } catch (error) {
         console.error('Signup failed:', error);
