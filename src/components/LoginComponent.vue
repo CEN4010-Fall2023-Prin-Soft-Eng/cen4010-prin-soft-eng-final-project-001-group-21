@@ -38,7 +38,7 @@ export default {
         });
         store.dispatch('login', { username: username.value, password: password.value });
         console.log('Token received:', response.data.token);
-        router.push({ name: 'home' });
+        router.push({ name:'home'});
       } catch (error) {
         console.error('Login error:', error);
       }

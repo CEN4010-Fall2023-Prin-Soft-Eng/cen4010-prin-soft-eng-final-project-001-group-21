@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/store'; // Make sure this is the correct path to your store
 
 // Import your route components
-import AppHome from '../views/HomeView';
 import AppCalendar from '../components/AppCalendar';
 import StudySessions from '../components/StudySessions';
 import Login from '../components/LoginComponent';
@@ -67,7 +66,6 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
 
 
 export default router;
