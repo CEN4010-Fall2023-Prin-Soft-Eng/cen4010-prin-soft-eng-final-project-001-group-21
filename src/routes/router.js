@@ -6,7 +6,8 @@ import AppHome from '../views/HomeView';
 import AppCalendar from '../components/AppCalendar';
 import StudySessions from '../components/StudySessions';
 import Login from '../components/LoginComponent';
-import SignUpComponent from '../components/SignupComponent'; // Update the path if necessary
+import SignUpComponent from '../components/SignupComponent';
+import homePage from'../components/homePage';
 
 // Define your routes
 const routes = [
@@ -19,7 +20,7 @@ const routes = [
   {
     path: '/homePage',
     name: 'home',
-    component: AppHome,
+    component: homePage,
     meta: { requiresAuth: true }
   },
   {
