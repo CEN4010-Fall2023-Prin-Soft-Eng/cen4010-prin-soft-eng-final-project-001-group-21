@@ -7,6 +7,7 @@ exports.up = function(knex) {
       table.increments('id').primary();
       table.string('username').notNullable().unique();
       table.string('password').notNullable();
+      table.string('email').notNullable().unique()
       // Add other columns as needed
     });
   };

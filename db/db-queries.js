@@ -21,6 +21,11 @@ const deleteUser = (id) => {
   return db('users').where('id', id).del();
 };
 
+
+const findUserByEmail = (email) => {
+  return db('users').where({ email }).first();
+};
+
 const findUserByUsername = (username) => {
     return db('users').where({ username }).first();
   };  
@@ -34,6 +39,7 @@ module.exports = {
   findUserById,
   createUser,
   updateUser,
+  findUserByEmail,
   deleteUser,
   findUserByUsername,
   createStudySession

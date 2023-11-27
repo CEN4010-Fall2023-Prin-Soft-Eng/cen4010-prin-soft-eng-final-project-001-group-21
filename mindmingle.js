@@ -8,11 +8,14 @@ const session = require('express-session');
 const { Pool } = require('pg');
 const { getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
 const db = require('./db/db-config');
+
+
 db.debug(true);
 console.log('Database URL:', process.env.DATABASE_URL);
 
 // Initialize Express app
 const app = express();
+app.use(express.json())
 
 // Enable CORS
 app.use(cors());
@@ -65,24 +68,33 @@ app.post('/login', async (req, res) => {
     }
   });
 
-  async function findUserByEmail(email) {
-    try {
-      const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-      return result.rows[0]; // Assuming email is unique and returns only one user
-    } catch (err) {
-      console.error('Error in findUserByEmail:', err);
-      throw err; // Rethrow the error to be handled in the calling function
-    }
+// Assuming db is an instance of Knex
+async function findUserByEmail(email) {
+  console.log("Email passed to findUserByEmail:", email);
+  try {
+    const result = await db.select('*').from('users').where('email', email).first();
+    return result; // Knex's .first() returns the first row or undefined
+  } catch (err) {
+    console.error('Error in findUserByEmail:', err);
+    throw err;
   }
+}
+
 //SIGNUP ROUTE
 app.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
-  
+
+  // Log the received request body
+  console.log("Received signup data:", req.body);
+
   try {
       const existingUser = await findUserByUsername(username);
       if (existingUser) {
           return res.status(409).send('Username already taken');
       }
+
+      // Log before calling findUserByEmail
+      console.log("Checking for existing email:", email);
 
       const existingEmail = await findUserByEmail(email);
       if (existingEmail) {
@@ -97,6 +109,7 @@ app.post('/signup', async (req, res) => {
       res.status(500).send('Error signing up user');
   }
 });
+
 
 /* STUDY SESSIONS */
  

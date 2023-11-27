@@ -19,4 +19,5 @@ const db = knex({
   // Add pool configuration if needed, etc.
 });
 
+
 module.exports = db;
