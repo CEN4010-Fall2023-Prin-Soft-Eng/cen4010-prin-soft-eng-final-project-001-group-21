@@ -6,7 +6,8 @@ import AppCalendar from '../components/AppCalendar';
 import StudySessions from '../components/StudySessions';
 import Login from '../components/LoginComponent';
 import SignUpComponent from '../components/SignupComponent';
-import homePage from'../components/homePage';
+import homePage from'../views/HomeView';
+
 
 // Define your routes
 const routes = [
