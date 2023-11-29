@@ -116,7 +116,7 @@ app.post('/signup', async (req, res) => {
 
 //Route to retrieve study sessions from the 'studysessions' table
 app.get('/api/study-sessions', authenticateToken, async (req, res) => {
-  console.log.log(req.user);
+  console.log(req.user);
   const userId = req.user.id;
   console.log('User ID:', userId); // Check if userId is correctly retrieved
   
