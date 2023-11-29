@@ -7,7 +7,7 @@
 
     <!-- Header Section -->
     <header>
-      <img src="mindmingle1.png" alt="Mind Mingle Logo" width="600px" height="auto">
+      <img src="mindmingle.png" alt="Mind Mingle Logo" width="600px" height="auto">
     </header>
 
     <!-- Main Content Section -->
