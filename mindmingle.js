@@ -118,20 +118,22 @@ app.post('/signup', async (req, res) => {
 app.get('/api/study-sessions', authenticateToken, async (req, res) => {
   console.log(req.user);
   const userId = req.user.id;
-  console.log('User ID:', userId); // Check if userId is correctly retrieved
-  
+  console.log('User ID:', userId);
+
+  if (!userId) {
+    return res.status(400).send('User ID is undefined');
+  }
+
   try {
     const userStudySessions = await db('study_sessions').select('*').where('user_id', userId);
-    console.log(userStudySessions.toString());
+   console.log(userStudySessions.toString());
     console.log('Fetched Study Sessions:', userStudySessions); // Check the fetched study sessions
     res.json(userStudySessions);
   } catch (err) {
-    console.error('Error fetching study sessions for user:', err);
+     console.error('Error fetching study sessions for user:', err);
     res.status(500).json({ error: 'Server error while fetching study sessions for user' });
   }
 });
-
-
 
 // Import the createStudySession function from db-queries.js
 app.post('/api/study-sessions', async (req, res) => {
