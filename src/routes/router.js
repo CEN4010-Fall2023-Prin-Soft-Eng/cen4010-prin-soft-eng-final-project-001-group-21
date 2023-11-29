@@ -7,10 +7,17 @@ import StudySessions from '../components/StudySessions';
 import Login from '../components/LoginComponent';
 import SignUpComponent from '../components/SignupComponent';
 import homePage from'../components/homePage';
+import MusicSelection from '../components/MusicSelection'
 
 
 // Define your routes
 const routes = [
+  {
+    path: '/music-selection', // Add the route for MusicSelection
+    name: 'music-selection',
+    component: MusicSelection,
+    meta: { requiresAuth: true }
+  },  
   {
     path: '/login',
     name: 'login',
