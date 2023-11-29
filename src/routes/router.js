@@ -6,7 +6,7 @@ import AppCalendar from '../components/AppCalendar';
 import StudySessions from '../components/StudySessions';
 import Login from '../components/LoginComponent';
 import SignUpComponent from '../components/SignupComponent';
-import homePage from'../views/HomeView';
+import homePage from'../components/homePage';
 
 
 // Define your routes
