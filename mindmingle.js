@@ -9,20 +9,14 @@ const { Pool } = require('pg');
 const { getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
 const db = require('./db/db-config');
 
-
-db.debug(true);
-console.log('Database URL:', process.env.DATABASE_URL);
-
 // Initialize Express app
 const app = express();
-app.use(express.json())
 
-// Enable CORS
+// Enable CORS and Body parser middleware
 app.use(cors());
-
-// Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.json());
 
 // Session configuration
 app.use(session({
@@ -34,167 +28,88 @@ app.use(session({
 
 // Set up PostgreSQL connection
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    // If you're using SSL, you'll need the following line
-    // ssl: { rejectUnauthorized: false }
-  });
-  
-  /* LOGIN ROUTE */
+  connectionString: process.env.DATABASE_URL,
+  // If you're using SSL, you'll need the following line
+  // ssl: { rejectUnauthorized: false }
+});
+
+// Login Route
 app.post('/login', async (req, res) => {
-    console.log('req.body: ',req.body)
-    const { username, password } = req.body;
-    try {
-      // Retrieve user from the database using knex
-      const user = await findUserByUsername(username);
-      console.log('findUserByUsername called with:', username); // Add this line
-      if (!user) {
-        return res.status(401).send('No user found with this username');
-      }
-  
-      // Compare hashed password
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).send('Password incorrect');
-      }
-  
-      // Create token  
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '48h' });
-      console.log('token variable: ', token)
-      res.json({token}); // Send the token to the client
-  
-    } catch (err) {
-      console.error('Error during login:', err);
-      res.status(500).send('Server error during login');
-    }
-  });
-
-// Assuming db is an instance of Knex
-async function findUserByEmail(email) {
-  console.log("Email passed to findUserByEmail:", email);
+  const { username, password } = req.body;
   try {
-    const result = await db.select('*').from('users').where('email', email).first();
-    return result; // Knex's .first() returns the first row or undefined
-  } catch (err) {
-    console.error('Error in findUserByEmail:', err);
-    throw err;
-  }
-}
+    const user = await findUserByUsername(username);
+    if (!user) return res.status(401).send('No user found with this username');
 
-//SIGNUP ROUTE
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).send('Password incorrect');
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '48h' });
+    res.json({ token });
+  } catch (err) {
+    res.status(500).send('Server error during login');
+  }
+});
+
+// Signup Route
 app.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
-
-  // Log the received request body
-  console.log("Received signup data:", req.body);
-
   try {
-      const existingUser = await findUserByUsername(username);
-      if (existingUser) {
-          return res.status(409).send('Username already taken');
-      }
+    const existingUser = await findUserByUsername(username);
+    if (existingUser) return res.status(409).send('Username already taken');
 
-      // Log before calling findUserByEmail
-      console.log("Checking for existing email:", email);
+    const existingEmail = await findUserByEmail(email);
+    if (existingEmail) return res.status(409).send('Email already in use');
 
-      const existingEmail = await findUserByEmail(email);
-      if (existingEmail) {
-          return res.status(409).send('Email already in use');
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const userId = await createUser({ username, email, password: hashedPassword });
-      res.status(201).send({ userId, message: 'User successfully created' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userId = await createUser({ username, email, password: hashedPassword });
+    res.status(201).send({ userId, message: 'User successfully created' });
   } catch (err) {
-      console.error('Signup error:', err);
-      res.status(500).send('Error signing up user');
+    res.status(500).send('Error signing up user');
   }
 });
-
-
-/* STUDY SESSIONS */
- 
-
-//Route to retrieve study sessions from the 'studysessions' table
-app.get('/api/study-sessions', authenticateToken, async (req, res) => {
-  console.log(req.user);
-  const userId = req.user.id;
-  console.log('User ID:', userId);
-
-  if (!userId) {
-    return res.status(400).send('User ID is undefined');
-  }
-
-  try {
-    const userStudySessions = await db('study_sessions').select('*').where('user_id', userId);
-   console.log(userStudySessions.toString());
-    console.log('Fetched Study Sessions:', userStudySessions); // Check the fetched study sessions
-    res.json(userStudySessions);
-  } catch (err) {
-     console.error('Error fetching study sessions for user:', err);
-    res.status(500).json({ error: 'Server error while fetching study sessions for user' });
-  }
-});
-
-// Import the createStudySession function from db-queries.js
-app.post('/api/study-sessions', async (req, res) => {
-  try {
-    // Extract study session data from the request body
-    const { date, start_time, end_time, subject, notes } = req.body;
-    const userId= req.user.id; //Get from JWT token 
-
-    // Create an object with the session data
-    const sessionData = {
-      user_id: userId, //associate each session with user
-      date,
-      start_time,
-      end_time,
-      subject,
-      notes,
-    };
-
-    // Insert the study session data into the 'study_sessions' table
-    const createdSession = await createStudySession(sessionData);
-
-    // Return a success response with the created study session
-    res.status(201).json(createdSession[0]); // Assuming createdSession is an array with one item
-  } catch (err) {
-    console.error('Error creating study session:', err);
-    res.status(500).json({ error: 'Server error while creating study session' });
-  }
-});
-
-
-
-
-/*END STUDY SESSIONS API'S*/
-// Database configuration
 
 // Authentication middleware using JWT
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401);
+  if (!token) return res.sendStatus(401);
 
-  // Decoding token without verifying - should only be used for debugging
-  const decoded = jwt.decode(token);
-  console.log(decoded); // Check the decoded payload
-
-  // Verify token as usual
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
-    console.log(user); // This should display the decoded JWT payload
     req.user = user;
     next();
   });
 }
 
-// API routes
-// (Define your API routes here)
+// Route to retrieve study sessions
+app.get('/api/study-sessions', authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  if (!userId) return res.status(400).send('User ID is missing in the token');
+
+  try {
+    const userStudySessions = await db('study_sessions').select('*').where('user_id', userId);
+    res.json(userStudySessions);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error while fetching study sessions for user' });
+  }
+});
+
+// Route to create study sessions
+app.post('/api/study-sessions', authenticateToken, async (req, res) => {
+  const { date, start_time, end_time, subject, notes } = req.body;
+  const userId = req.user.userId;
+
+  const sessionData = { user_id: userId, date, start_time, end_time, subject, notes };
+  try {
+    const createdSession = await createStudySession(sessionData);
+    res.status(201).json(createdSession[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error while creating study session' });
+  }
+});
 
 // Serve Vue application
-// Make sure the path to 'dist' is correct
 app.use(express.static(path.join(__dirname, 'dist')));
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
