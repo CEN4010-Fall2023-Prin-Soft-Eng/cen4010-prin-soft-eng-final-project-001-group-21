@@ -7,7 +7,7 @@
 
     <!-- Header Section -->
     <header>
-      <img src="mindmingle.png" alt="Mind Mingle Logo" width="600px" height="auto">
+      <img :src="require('@/assets/mindmingle.png')" alt="Mind Mingle Logo" width="600px" height="auto">
     </header>
 
     <!-- Main Content Section -->
@@ -31,8 +31,14 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import mindMingleLogo from '@/assets/mindmingle.png'; // Adjust the path if necessary
 
 export default {
+  data() {
+    return {
+      mindMingleLogo: mindMingleLogo
+    };
+  },
   computed: {
     ...mapGetters(['isAuthenticated', 'Study_Sessions']),
   },
@@ -40,7 +46,6 @@ export default {
     ...mapActions(['logout']),
     
     handleLogout() {
-      // Call the logout action and then redirect to the login page
       this.logout().then(() => {
         this.$router.push('/login');
       }).catch((error) => {
@@ -52,18 +57,17 @@ export default {
 </script>
 
 <style scoped>
-/* Styles for logout button container */
 .logout-container {
   display: inline-block;
-  background-color: #f0f0f0; /* light grey background */
-  border: 1px solid #d0d0d0; /* darker grey border */
-  padding: 10px 20px; /* some padding around the text */
-  cursor: pointer; /* change mouse cursor to indicate clickable */
-  transition: transform 0.2s; /* smooth transition for transform */
+  background-color: #f0f0f0;
+  border: 1px solid #d0d0d0;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
 .logout-button {
-  background-color: #4285F4; /* Google blue */
+  background-color: #4285F4;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -72,9 +76,10 @@ export default {
 }
 
 .logout-button:hover {
-  background-color: #357ae8; /* darker blue on hover */
-  transform: scale(1.1); /* scale up size to 110% when hovered */
+  background-color: #357ae8;
+  transform: scale(1.1);
 }
 
-/* Your additional CSS styles here */
+/* Additional styles can go here */
 </style>
+
