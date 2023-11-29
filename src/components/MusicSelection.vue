@@ -55,6 +55,7 @@
         <InspirationalMessage />
     </div>
   </template>
+  
   <script>
   import Timer from './TimerComponent.vue';
   import InspirationalMessage from './InspirationalMessage.vue';
