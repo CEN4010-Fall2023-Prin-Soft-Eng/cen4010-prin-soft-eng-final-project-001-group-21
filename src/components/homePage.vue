@@ -5,17 +5,17 @@
       <button type="button" class="button logout-button" @click="handleLogout">Logout</button>
     </div>
 
-    <!-- Header Section -->
-    <header>
-      <!-- Image displayed here using the mindMingleLogo data property -->
-      <img :src="mindMingleLogo" alt="Mind Mingle Logo" width="600">
+    <!-- Header Section with background and logo images -->
+    <header class="header-background">
+      <!-- Logo image here -->
+      <img :src="mindMingleLogo" alt="Mind Mingle Logo" class="logo-image">
     </header>
 
     <!-- Main Content Section -->
     <main>
       <h2>Welcome, <span id="username"></span>!</h2>
       <p>This is the home page of Mind Mingle. Explore and connect with others!</p>
-        
+      
       <!-- Streak Section -->
       <div id="streak-section">
         <p>Your Current Streak: <span id="streak-count"></span></p>
@@ -37,7 +37,7 @@ import mindMingleLogo from '@/assets/mindmingle.png'; // Adjust the path if nece
 export default {
   data() {
     return {
-      mindMingleLogo: mindMingleLogo // This is where the image is made available to the template
+      mindMingleLogo: mindMingleLogo, // Make the logo image available to the template
     };
   },
   computed: {
@@ -58,6 +58,41 @@ export default {
 </script>
 
 <style scoped>
+.header-background {
+  background-image: url('@/assets/books-2.png'); /* The path might need to be adjusted */
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center; /* Center the background image */
+  color: #fff; /* White text color */
+  text-align: center;
+  position: relative; /* Set the position context for absolute children */
+  padding: auto;
+  height: 400px; /* Set a fixed height or as needed */
+}
+
+.logo-image {
+  position: absolute;
+  top: 48%; /* Reduced from 60% to move the logo up */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust the positioning to truly center the logo */
+  width: 600px; /* Adjust the width as needed */
+  height: auto; /* Maintain aspect ratio */
+  z-index: 10; /* Make sure the logo is above the background image */
+  margin-bottom: -20px;
+  margin-top: 80px;
+  animation: flicker 0.9s infinite alternate;
+}
+
+/* Flicker animation */
+@keyframes flicker {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .logout-container {
   display: inline-block;
   background-color: #f0f0f0;
