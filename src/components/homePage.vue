@@ -7,7 +7,8 @@
 
     <!-- Header Section -->
     <header>
-      <img :src="require('@/assets/mindmingle.png')" alt="Mind Mingle Logo" width="600px" height="auto">
+      <!-- Image displayed here using the mindMingleLogo data property -->
+      <img :src="mindMingleLogo" alt="Mind Mingle Logo" width="600">
     </header>
 
     <!-- Main Content Section -->
@@ -36,7 +37,7 @@ import mindMingleLogo from '@/assets/mindmingle.png'; // Adjust the path if nece
 export default {
   data() {
     return {
-      mindMingleLogo: mindMingleLogo
+      mindMingleLogo: mindMingleLogo // This is where the image is made available to the template
     };
   },
   computed: {
@@ -82,4 +83,3 @@ export default {
 
 /* Additional styles can go here */
 </style>
-
