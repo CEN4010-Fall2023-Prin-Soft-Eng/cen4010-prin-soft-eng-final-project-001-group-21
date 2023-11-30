@@ -67,7 +67,8 @@ export default {
   text-align: center;
   position: relative; /* Set the position context for absolute children */
   padding: auto;
-  height: 400px; /* Set a fixed height or as needed */
+  height: 400px;
+  width:auto; 
 }
 
 .logo-image {
@@ -94,12 +95,13 @@ export default {
 }
 
 .logout-container {
-  display: inline-block;
-  background-color: #f0f0f0;
-  border: 1px solid #d0d0d0;
+  position: absolute; /* Fixed position relative to the viewport */
+  top: 7px; /* Align to the top of the viewport */
+  right: 0; /* Align to the right of the viewport */
   padding: 10px 20px;
   cursor: pointer;
   transition: transform 0.2s;
+  z-index: 1000; /* Ensure it's above other elements */
 }
 
 .logout-button {

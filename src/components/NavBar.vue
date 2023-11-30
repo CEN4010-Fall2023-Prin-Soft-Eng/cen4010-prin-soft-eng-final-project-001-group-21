@@ -33,7 +33,34 @@
   };
   </script>
   
-  <style>
-  /* Style your navbar here */
-  </style>
+
+
+
+<style scoped>
+/* Style for the nav bar */
+nav {
+  display: flex;
+  justify-content: center; /* Center the nav items horizontally */
+  align-items: center;
+  gap: 10px;
+  width: 100%; /* Ensure the nav is full width */
+  background-color: #373737; /* Light grey background */
+  padding: 6px 0; /* Add padding on top and bottom */
+  margin: 0; /* Remove any margin */
+}
+
+/* Additional styles for the ButtonComponent can go here, for example: */
+.button-component-class { /* Replace with actual class if it exists */
+  padding: 10px 20px;
+  background-color: #4285F4;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.button-component-class:hover {
+  background-color: #357ae8;
+}
+
+</style>
   
