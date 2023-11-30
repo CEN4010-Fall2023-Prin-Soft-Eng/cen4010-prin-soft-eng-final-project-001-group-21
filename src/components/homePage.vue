@@ -96,7 +96,7 @@ export default {
 
 .logout-container {
   position: absolute; /* Fixed position relative to the viewport */
-  top: 7px; /* Align to the top of the viewport */
+  top: -2px; /* Align to the top of the viewport */
   right: 0; /* Align to the right of the viewport */
   padding: 10px 20px;
   cursor: pointer;
