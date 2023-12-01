@@ -7,11 +7,11 @@
     <ButtonComponent
       :isActive="isPageActive('calendar')"
       @button-click="navigateTo('calendar')"
-    >Calendar</ButtonComponent>
+    >Schedule Exam</ButtonComponent>
     <ButtonComponent
       :isActive="isPageActive('study-sessions')"
       @button-click="navigateTo('study-sessions')"
-    >Focus Session</ButtonComponent>
+    >Study Session</ButtonComponent>
     <!-- New ButtonComponent for Music Selection -->
     <ButtonComponent
       :isActive="isPageActive('Focus Session')"
