@@ -84,42 +84,38 @@ export default {
         this.currentMonth += 1;
       }
     },
-  async scheduleExam() {
-    const { date, subject, start_time, notes } = this.newExam;
-    const user_id = 1; // Replace with the actual user ID logic
+    async scheduleExam() {
+      const { date, subject, start_time, notes } = this.newExam;
+      const user_id = 1; // Replace with the actual user ID logic
 
-    try {
-      const response = await fetch('/calendar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_id, subject, exam_date: date, start_time, notes }),
-      });
+      try {
+        const response = await fetch('/calendar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id, subject, exam_date: date, start_time, notes }),
+        });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const savedExam = await response.json();
+        this.scheduledExams.push(savedExam);
+      } catch (error) {
+        console.error('Error:', error);
       }
 
-      const savedExam = await response.json();
-      this.scheduledExams.push(savedExam);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-
-    this.newExam = { date: '', subject: '', start_time: '', notes: '' };
-  },
-},
-  
-    scheduleExam() {
-      this.scheduledExams.push({ ...this.newExam, id: Date.now() });
-      this.newExam = { date: '', subject: '', notes: '' };
+      this.newExam = { date: '', subject: '', start_time: '', notes: '' };
     },
     formatDate(date) {
       return date.toISOString().split('T')[0];
     }
+  }
 };
 </script>
+
 
 <style scoped>
   .calendar {
