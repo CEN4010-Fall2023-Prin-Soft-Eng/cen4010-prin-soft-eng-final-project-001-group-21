@@ -69,6 +69,7 @@ app.post('/signup', async (req, res) => {
     res.status(500).send('Error signing up user');
   }
 });
+// GET endpoint to fetch scheduled exams
 
 app.post('/calendar', async (req, res) => {
   const { user_id, subject, exam_date, start_time, notes } = req.body;

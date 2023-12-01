@@ -5,7 +5,6 @@
       <h2>{{ currentMonthName }} {{ currentYear }}</h2>
       <button class="nav-button" @click="nextMonth" @mouseenter="grow" @mouseleave="shrink">&gt;</button>
     </div>
-
     <div class="calendar-body">
       <div class="day" v-for="dayOfWeek in daysOfWeek" :key="dayOfWeek">{{ dayOfWeek }}</div>
       <div v-for="day in daysInMonth" :key="day.date" @click="selectDate(day.date)" 
@@ -16,7 +15,6 @@
         </div>
       </div>
     </div>
-
     <div class="exam-scheduler">
       <h2>Schedule Exam</h2>
       <form @submit.prevent="scheduleExam">
@@ -28,7 +26,30 @@
       </form>
     </div>
   </div>
+  <!-- New section to display scheduled exams -->
+  <div class="table-container">
+      <h2>Scheduled Exams</h2>
+      <table class="scheduled-exams-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Subject</th>
+            <th>Start Time</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="exam in scheduledExams" :key="exam.id">
+            <td>{{ formatDate(exam.exam_date) }}</td>
+            <td>{{ exam.subject }}</td>
+            <td>{{ exam.start_time }}</td>
+            <td>{{ exam.notes }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 </template>
+
 
 <script>
 export default {
@@ -132,29 +153,24 @@ export default {
     flex-direction: column;
     align-items: center;
   }
-
   .calendar-header {
     display: flex;
     align-items: center;
   }
-
   .calendar-header .nav-button {
     background-color: #f0f0f0;
     border: 1px solid #d0d0d0;
     padding: 8px 16px;
     cursor: pointer;
   }
-
   .nav-button:hover {
     transform: scale(1.1);
   }
-
   .calendar-body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
   }
-
   .day, .date {
     text-align: center;
     margin: 5px;
@@ -162,25 +178,21 @@ export default {
     border: 1px solid #ccc;
     cursor: pointer;
   }
-
   .date.has-exam {
     background-color: #ffecb3;
   }
   .exam-scheduler {
     margin-top: 20px;
   }
-
   .exam-scheduler form {
     display: flex;
     flex-direction: column;
     width: 300px;
   }
-
   .exam-scheduler input, .exam-scheduler textarea {
     margin-bottom: 10px;
     padding: 8px;
   }
-
   .exam-scheduler button {
     cursor: pointer;
     padding: 10px;
@@ -188,5 +200,39 @@ export default {
     color: white;
     border: none;
   }
+  /* Style for the container of the tables */
+.table-container {
+  display: flex;
+  justify-content: center;
+}
+/* Style for the table */
+.scheduled-exams-table {
+  border-collapse: collapse;
+  width: 80%;
+  margin: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+/* Style for table headers */
+.scheduled-exams-table th {
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+  padding: 10px;
+  text-align: left;
+}
+/* Style for table rows */
+.scheduled-exams-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+/* Style for alternating rows */
+.scheduled-exams-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+/* Hover effect for rows */
+.scheduled-exams-table tr:hover {
+  background-color: #ddd;
+}
 
 </style>
+
