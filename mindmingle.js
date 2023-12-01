@@ -32,6 +32,14 @@ const pool = new Pool({
   // If you're using SSL, you'll need the following line
   // ssl: { rejectUnauthorized: false }
 });
+pool.connect()
+  .then(() => console.log('Connected to PostgreSQL database successfully'))
+  .catch(e => console.error('Failed to connect to PostgreSQL database', e));
+pool.on('error', (err) => {
+    console.error('Unexpected error on idle client', err)
+    process.exit(-1)});
+
+    console.log(process.env.DATABASE_URL);
 
 // Login Route
 app.post('/login', async (req, res) => {
