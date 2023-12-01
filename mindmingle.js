@@ -20,7 +20,7 @@ app.use(express.json());
 
 // Session configuration
 app.use(session({
-  secret: 'your_secret_key', // Replace with your session secret
+  secret: 'mindovermatter', // Replace with your session secret
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false } // Set to true if using https
@@ -65,6 +65,31 @@ app.post('/signup', async (req, res) => {
     res.status(201).send({ userId, message: 'User successfully created' });
   } catch (err) {
     res.status(500).send('Error signing up user');
+  }
+});
+
+// Schedule Exams! 
+app.post('/calendar', async (req, res) => {
+  const { user_id, subject, exam_date, start_time, notes } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO scheduled_exams (user_id, subject, exam_date, start_time, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [user_id, subject, exam_date, start_time, notes]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error scheduling exam:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/calendar', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM scheduled_exams');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching scheduled exams:', err);
+    res.status(500).send('Server error');
   }
 });
 
