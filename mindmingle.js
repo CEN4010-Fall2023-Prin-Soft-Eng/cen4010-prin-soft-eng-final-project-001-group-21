@@ -18,6 +18,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, 'dist')));
+
 // Session configuration
 app.use(session({
   secret: 'mindovermatter', // Replace with your session secret
@@ -136,7 +138,6 @@ app.post('/api/study-sessions', authenticateToken, async (req, res) => {
 });
 
 // Serve Vue application
-app.use(express.static(path.join(__dirname, 'dist')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });

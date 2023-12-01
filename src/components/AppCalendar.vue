@@ -21,9 +21,9 @@
       <h2>Schedule Exam</h2>
       <form @submit.prevent="scheduleExam">
         <input type="date" v-model="newExam.date" required />
-        <input type="text" v-model="newExam.subject" placeholder="Subject" required />
+        <input type="text" id="subject" name="subject" v-model="newExam.subject" placeholder="Subject" required />
         <input type="time" v-model="newExam.start_time" placeholder="Start Time" required />
-        <textarea v-model="newExam.notes" placeholder="Notes"></textarea>
+        <textarea id="notes" name="notes" v-model="newExam.notes" placeholder="Notes"></textarea>
         <button type="submit">Schedule</button>
       </form>
     </div>
@@ -83,7 +83,20 @@ export default {
       } else {
         this.currentMonth += 1;
       }
-    },
+    },async mounted() {
+  try {
+    const response = await fetch('/calendar');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    console.log('Fetched data:', data); // Log the data to the console
+    this.scheduledExams = data; // Update your component's data with the fetched data
+  } catch (error) {
+    console.error('Error:', error);
+  }
+
+  },
     async scheduleExam() {
       const { date, subject, start_time, notes } = this.newExam;
       const user_id = 1; // Replace with the actual user ID logic
