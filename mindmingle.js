@@ -74,28 +74,18 @@ app.post('/calendar', async (req, res) => {
   const { user_id, subject, exam_date, start_time, notes } = req.body;
   try {
     // Assuming you have a 'pool' for database connections
-    const result = await pool.query(
-      'INSERT INTO scheduled_exams (user_id, subject, exam_date, start_time, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+    await pool.query(
+      'INSERT INTO scheduled_exams (user_id, subject, exam_date, start_time, notes) VALUES ($1, $2, $3, $4, $5)',
       [user_id, subject, exam_date, start_time, notes]
     );
 
-    res.json(result.rows[0]);
+    res.status(204).send(); // Respond with a success status (204 No Content)
   } catch (err) {
     console.error('Error scheduling exam:', err);
     res.status(500).send('Server error');
   }
 });
 
-
-app.get('/calendar', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM scheduled_exams');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching scheduled exams:', err);
-    res.status(500).send('Server error');
-  }
-});
 
 // Authentication middleware using JWT
 function authenticateToken(req, res, next) {
