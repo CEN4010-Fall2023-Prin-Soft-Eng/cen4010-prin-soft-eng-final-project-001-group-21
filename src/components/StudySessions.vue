@@ -25,13 +25,7 @@
       
       <!-- Add other fields as necessary -->
       <button type="submit">Create Session</button>
-
-      <!-- Button to navigate to MusicSelection.vue -->
-      <router-link to="/music-selection">
-        <button type="button">Go to Music Selection</button>
-      </router-link>
     </form>
-    
     <!-- Area to display existing study sessions -->
     <div id="sessions-display">
     </div>
