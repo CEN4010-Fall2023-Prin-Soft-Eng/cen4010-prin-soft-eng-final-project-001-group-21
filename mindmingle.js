@@ -70,7 +70,6 @@ app.post('/signup', async (req, res) => {
       // Check the database health
       const dbHealth = await db.raw('SELECT NOW()');
       console.log('Database time:', dbHealth.rows[0].now);
-  
       const { username, email, password } = req.body;
   
       // Log when acquiring a connection
