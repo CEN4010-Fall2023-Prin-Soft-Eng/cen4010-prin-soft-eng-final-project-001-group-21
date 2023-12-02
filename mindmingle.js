@@ -28,9 +28,11 @@ app.use(session({
 
 // Set up PostgreSQL connection
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  // If you're using SSL, you'll need the following line
-  // ssl: { rejectUnauthorized: false }
+  user:'mindmingle',
+  host: '127.0.0.1',
+  database: 'postgres',
+  password:'mindovermatter',
+  port:5432,
 });
 pool.connect()
   .then(() => console.log('Connected to PostgreSQL database successfully'))
@@ -72,7 +74,8 @@ app.post('/signup', async (req, res) => {
     const userId = await createUser({ username, email, password: hashedPassword });
     res.status(201).send({ userId, message: 'User successfully created' });
   } catch (err) {
-    res.status(500).send('Error signing up user');
+    res.status(500).send({ message: 'Error signing up user', error: err.toString()});
+;
   }
 });
 
