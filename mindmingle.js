@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const { Pool } = require('pg');
-const { getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
+const {findUserByEmail,getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
 const db = require('./db/db-config');
 
 // Initialize Express app
@@ -17,7 +17,11 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
-
+app.use((err, req, res, next) => {
+    console.error('Unhandled Error', err);
+    res.status(500).send('Internal Server Error');
+  });
+  
 // Session configuration
 app.use(session({
   secret: 'your_secret_key', // Replace with your session secret
@@ -26,23 +30,19 @@ app.use(session({
   cookie: { secure: false } // Set to true if using https
 }));
 
-// Set up PostgreSQL connection
-const pool = new Pool({
-  user:'mindmingle',
-  host: '127.0.0.1',
-  database: 'postgres',
-  password:'mindovermatter',
-  port:5432,
-});
-pool.connect()
-  .then(() => console.log('Connected to PostgreSQL database successfully'))
-  .catch(e => console.error('Failed to connect to PostgreSQL database', e));
-pool.on('error', (err) => {
-    console.error('Unexpected error on idle client', err)
-    process.exit(-1)});
-
-    console.log(process.env.DATABASE_URL);
-
+// Check PostgreSQL connection
+app.get('/health', async (req, res) => {
+    try {
+      // Perform a simple query to check the database connection
+      const result = await db.raw('SELECT NOW()');
+      // If the query succeeds, the database connection is healthy
+      res.status(200).json({ status: 'ok', timestamp: result.rows[0].now });
+    } catch (error) {
+      // If the query fails, the database connection is not healthy
+      res.status(500).json({ status: 'error', message: error.message });
+    }
+  });
+  
 // Login Route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -61,23 +61,51 @@ app.post('/login', async (req, res) => {
 });
 
 // Signup Route
+
 app.post('/signup', async (req, res) => {
-  const { username, email, password } = req.body;
-  try {
-    const existingUser = await findUserByUsername(username);
-    if (existingUser) return res.status(409).send('Username already taken');
+    try {
+      // Log when a signup request is received
+      console.log('Signup request received');
+  
+      // Check the database health
+      const dbHealth = await db.raw('SELECT NOW()');
+      console.log('Database time:', dbHealth.rows[0].now);
+  
+      const { username, email, password } = req.body;
+  
+      // Log when acquiring a connection
+      console.log('Acquiring a database connection');
+      const existingUser = await findUserByUsername(username);
+  
+      // Log when releasing the connection
+      console.log('Releasing the database connection');
+      
+      if (existingUser) return res.status(409).send('Username already taken');
+  
+      // Log when acquiring a connection
+      console.log('Acquiring a database connection');
+      const existingEmail = await findUserByEmail(email);
+  
+      // Log when releasing the connection
+      console.log('Releasing the database connection');
+      
+      if (existingEmail) return res.status(409).send('Email already in use');
+  
+      // Log when acquiring a connection
+      console.log('Acquiring a database connection');
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Log when releasing the connection
+      console.log('Releasing the database connection');
+  
+      const userId = await createUser({ username, email, password: hashedPassword });
+      res.status(201).send({ userId, message: 'User successfully created' });
+    } catch (err) {
+      res.status(500).send({ message: 'Error signing up user', error: err.toString() });
+    }
+  });
+  
 
-    const existingEmail = await findUserByEmail(email);
-    if (existingEmail) return res.status(409).send('Email already in use');
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const userId = await createUser({ username, email, password: hashedPassword });
-    res.status(201).send({ userId, message: 'User successfully created' });
-  } catch (err) {
-    res.status(500).send({ message: 'Error signing up user', error: err.toString()});
-;
-  }
-});
 
 // Authentication middleware using JWT
 function authenticateToken(req, res, next) {
@@ -119,15 +147,38 @@ app.post('/api/study-sessions', authenticateToken, async (req, res) => {
   }
 });
 
-// Serve Vue application
 app.use(express.static(path.join(__dirname, 'dist')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start server
-const PORT = process.env.PORT || 5678;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}...`);
-  console.log(`Webapp: http://localhost:${PORT}/`);
-});
+PORT='5678';
+const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}...`);
+    console.log(`Webapp: http://localhost:${PORT}/`);
+  });
+  
+  // Clean up when the Node process ends
+  process.on('SIGTERM', () => {
+      console.error('SIGTERM signal received: closing HTTP server');
+      server.close(() => {
+        console.log('HTTP server closed');
+        db.destroy().then(() => {
+          console.log('Knex connection pool destroyed');
+          process.exit(0);
+        });
+      });
+  });
+  
+  process.on('SIGINT', () => {
+      console.error('SIGINT signal received: closing HTTP server');
+      server.close(() => {
+        console.log('HTTP server closed');
+        db.destroy().then(() => {
+          console.log('Knex connection pool destroyed');
+          process.exit(0);
+        });
+      });
+  });
+  

@@ -36,10 +36,8 @@ export default {
     const router = useRouter();
 
     const signup = async () => {
-      // Form validation logic here (if needed)
-
       if (password.value !== confirmPassword.value) {
-        // Show a more integrated error message instead of alert
+        console.error('passwords do not match');
         return;
       }
 
@@ -53,9 +51,19 @@ export default {
         // Reset form fields here if needed
         router.push('/login');
       } catch (error) {
-        console.error('Signup failed:', error);
-        // Show a more integrated error message instead of alert
-      }
+        if(error.response){
+            console.error('Signup failed:', error.response.data);
+            console.error('Status code:', error.response.status);
+            console.error('Headers:', error.response.headers);
+        }
+        else if (error.request){
+            console.error('Signup failed: No response', error.request);
+        }
+        else{
+            console.error('Error:',error.message);
+        }
+        console.error('Config: ',error.config);
+        }
     };
 
     return {

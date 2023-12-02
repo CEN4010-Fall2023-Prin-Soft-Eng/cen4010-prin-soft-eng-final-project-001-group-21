@@ -1,23 +1,25 @@
 require('dotenv').config();
 const knex = require('knex');
 
-const connection = process.env.DATABASE_URL ? {
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: true } : false
-} : {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'your_default_user',
-  password: process.env.DB_PASSWORD || 'your_default_password',
-  database: process.env.DB_NAME || 'mindmingle',
-  port: process.env.DB_PORT || 5432
-};
+const connection = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+  };
 
+// db-config.js
 const db = knex({
-  client: 'pg',
-  connection: connection,
-  searchPath: ['knex', 'public'],
-  // Add pool configuration if needed, etc.
-});
-
-
+    client: 'pg',
+    connection: connection,
+    debug:true,
+    searchPath: ['knex', 'public'],
+    pool: {
+      min: 2,
+      max: 100,
+      idleTimeoutMillis: 5000,
+      createTimeoutMillis: 5000,
+      acquireTimeoutMillis: 10000,
+      propagateCreateError: false
+    }
+  });
+   
 module.exports = db;
