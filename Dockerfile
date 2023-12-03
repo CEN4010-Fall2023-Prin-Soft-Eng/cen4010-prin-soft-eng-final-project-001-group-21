@@ -11,7 +11,8 @@ COPY package*.json ./
 RUN npm install
 
 # Bundle app source inside the Docker image
-COPY . .
+COPY dist /usr/src/app/dist
+
 
 # Build the Vue application
 RUN npm run build
