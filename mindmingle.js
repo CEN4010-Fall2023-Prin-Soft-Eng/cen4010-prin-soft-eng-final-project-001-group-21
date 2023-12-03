@@ -91,25 +91,20 @@ app.post('/login', async (req, res) => {
 app.post('/signup', async (req, res) => {
   try {
     console.log('Signup request received');
-
     // Check the database health
     const dbHealth = await db.raw('SELECT NOW()');
     console.log('Database time:', dbHealth.rows[0].now);
-
     const { username, email, password } = req.body;
-
     const existingUser = await findUserByUsername(username);
     if (existingUser) {
       console.log('Username already taken');
       return res.status(409).send('Username already taken');
     }
-
     const existingEmail = await findUserByEmail(email);
     if (existingEmail) {
       console.log('Email already in use');
       return res.status(409).send('Email already in use');
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
     const userId = await createUser({ username, email, password: hashedPassword });
     console.log('User successfully created:', userId);
