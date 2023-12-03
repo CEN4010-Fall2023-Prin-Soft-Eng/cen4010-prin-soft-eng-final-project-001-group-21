@@ -14,7 +14,7 @@ const db = knex({
     searchPath: ['knex', 'public'],
     pool: {
       min: 2,
-      max: 100,
+      max: 1000,
       idleTimeoutMillis: 5000,
       createTimeoutMillis: 5000,
       acquireTimeoutMillis: 10000,

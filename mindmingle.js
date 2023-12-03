@@ -9,6 +9,19 @@ const { Pool } = require('pg');
 const {findUserByEmail,getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
 const db = require('./db/db-config');
 
+// Set up the database connection pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
+});
+pool.on('connect', () => {
+  console.log('Connected to the database');
+});
+pool.on('error', (err) => {
+  console.error('Database connection error', err);
+  process.exit(-1);
+});
+module.exports = pool;
+
 // Initialize Express app
 const app = express();
 
@@ -20,6 +33,20 @@ app.use(express.json());
 app.use((err, req, res, next) => {
     console.error('Unhandled Error', err);
     res.status(500).send('Internal Server Error');
+  });
+app.use((err, req, res, next) => {
+    console.error('Unhandled Error', err);
+    if (err.code === '28P01') {
+      // Handle invalid database credentials
+      res.status(500).send('Internal Server Error due to database credentials');
+    } else {
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.originalUrl}`);
+    next();
   });
   
 // Session configuration
@@ -61,48 +88,39 @@ app.post('/login', async (req, res) => {
 });
 
 // Signup Route
-
 app.post('/signup', async (req, res) => {
-    try {
-      // Log when a signup request is received
-      console.log('Signup request received');
-  
-      // Check the database health
-      const dbHealth = await db.raw('SELECT NOW()');
-      console.log('Database time:', dbHealth.rows[0].now);
-      const { username, email, password } = req.body;
-  
-      // Log when acquiring a connection
-      console.log('Acquiring a database connection');
-      const existingUser = await findUserByUsername(username);
-  
-      // Log when releasing the connection
-      console.log('Releasing the database connection');
-      
-      if (existingUser) return res.status(409).send('Username already taken');
-  
-      // Log when acquiring a connection
-      console.log('Acquiring a database connection');
-      const existingEmail = await findUserByEmail(email);
-  
-      // Log when releasing the connection
-      console.log('Releasing the database connection');
-      
-      if (existingEmail) return res.status(409).send('Email already in use');
-  
-      // Log when acquiring a connection
-      console.log('Acquiring a database connection');
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      // Log when releasing the connection
-      console.log('Releasing the database connection');
-  
-      const userId = await createUser({ username, email, password: hashedPassword });
-      res.status(201).send({ userId, message: 'User successfully created' });
-    } catch (err) {
-      res.status(500).send({ message: 'Error signing up user', error: err.toString() });
+  try {
+    console.log('Signup request received');
+
+    // Check the database health
+    const dbHealth = await db.raw('SELECT NOW()');
+    console.log('Database time:', dbHealth.rows[0].now);
+
+    const { username, email, password } = req.body;
+
+    const existingUser = await findUserByUsername(username);
+    if (existingUser) {
+      console.log('Username already taken');
+      return res.status(409).send('Username already taken');
     }
-  });
+
+    const existingEmail = await findUserByEmail(email);
+    if (existingEmail) {
+      console.log('Email already in use');
+      return res.status(409).send('Email already in use');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userId = await createUser({ username, email, password: hashedPassword });
+    console.log('User successfully created:', userId);
+    res.status(201).send({ userId, message: 'User successfully created' });
+
+  } catch (err) {
+    console.error('signup error: ', err);
+    res.status(500).send({ message: 'Error signing up user', error: err.toString() });
+  }
+});
+
   
 
 
@@ -161,23 +179,13 @@ const server = app.listen(PORT, () => {
   // Clean up when the Node process ends
   process.on('SIGTERM', () => {
       console.error('SIGTERM signal received: closing HTTP server');
-      server.close(() => {
+      server.close( async () => {
         console.log('HTTP server closed');
-        db.destroy().then(() => {
-          console.log('Knex connection pool destroyed');
-          process.exit(0);
+        await db.destroy().then(() => {
+        console.log('Knex connection pool destroyed');
+        process.exit(0);
         });
       });
   });
   
-  process.on('SIGINT', () => {
-      console.error('SIGINT signal received: closing HTTP server');
-      server.close(() => {
-        console.log('HTTP server closed');
-        db.destroy().then(() => {
-          console.log('Knex connection pool destroyed');
-          process.exit(0);
-        });
-      });
-  });
-  
+
