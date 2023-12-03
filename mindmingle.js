@@ -165,7 +165,8 @@ app.get('*', (req, res) => {
 });
 
 // Start server
-PORT='5678';
+const port = process.env.PORT || 8080; 
+ 
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}...`);
     console.log(`Webapp: http://localhost:${PORT}/`);
