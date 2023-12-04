@@ -179,38 +179,7 @@ export default {
     border: none;
   }
   /* Style for the container of the tables */
-.table-container {
-  display: flex;
-  justify-content: center;
-}
-/* Style for the table */
-.scheduled-exams-table {
-  border-collapse: collapse;
-  width: 80%;
-  margin: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-/* Style for table headers */
-.scheduled-exams-table th {
-  background-color: #f2f2f2;
-  border-bottom: 1px solid #ddd;
-  font-weight: bold;
-  padding: 10px;
-  text-align: left;
-}
-/* Style for table rows */
-.scheduled-exams-table td {
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
-}
-/* Style for alternating rows */
-.scheduled-exams-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-/* Hover effect for rows */
-.scheduled-exams-table tr:hover {
-  background-color: #ddd;
-}
+
 
 </style>
 
