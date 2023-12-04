@@ -26,28 +26,6 @@
       </form>
     </div>
   </div>
-  <!-- New section to display scheduled exams -->
-  <div class="table-container">
-      <h2>Scheduled Exams</h2>
-      <table class="scheduled-exams-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Subject</th>
-            <th>Start Time</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="exam in scheduledExams" :key="exam.id">
-            <td>{{ formatDate(exam.exam_date) }}</td>
-            <td>{{ exam.subject }}</td>
-            <td>{{ exam.start_time }}</td>
-            <td>{{ exam.notes }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
 </template>
 
 
