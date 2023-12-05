@@ -11,14 +11,31 @@
       </form>
     </div>
     <h1>Scheduled Exams</h1>
-    <div id="exams-container">
-      <div v-for="exam in scheduledExams" :key="exam.id">
-        <p>{{ exam.subject }} on {{ formatExamDate(exam.exam_date) }} at {{ exam.start_time }}</p>
-        <!-- Add more exam details here -->
-      </div>
+    <div>
+      <label for="examDropdown">Select Exam:</label>
+      <select id="examDropdown" v-model="selectedExamId">
+        <option value="">Select an exam</option>
+        <option v-for="exam in scheduledExams" :key="exam.id" :value="exam.id">{{ exam.subject }}</option>
+      </select>
+      <button @click="deleteExam(selectedExamId)">Delete</button>
+    </div>
+    <div v-if="selectedExam">
+      <h3>Selected Exam Details</h3>
+      <p><strong>Subject:</strong> {{ selectedExam.subject }}</p>
+      <p><strong>Date:</strong> {{ selectedExam.exam_date }}</p>
+      <p><strong>Start Time:</strong> {{ selectedExam.start_time }}</p>
+    </div>
+    <div>
+      <h3>List of Scheduled Exams</h3>
+      <ul>
+        <li v-for="exam in scheduledExams" :key="exam.id">
+          {{ exam.subject }} - {{ exam.exam_date }} - {{ exam.start_time }}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
+
 
 
 <script>
@@ -27,7 +44,13 @@ export default {
     return {
       scheduledExams: [],
       newExam: { date: '', subject: '', start_time: '', notes: '' },
+      selectedExamId: '', // Added a selectedExamId data property
     };
+  }, 
+  computed: {
+    selectedExam() {
+      return this.scheduledExams.find((exam) => exam.id === this.selectedExamId);
+    },
   },
   methods: {
     async scheduleExam() {
@@ -35,7 +58,7 @@ export default {
       const user_id = 1; // Replace with the actual user ID logic
 
       try {
-        const response = await fetch('/api/calendar', {  // Updated endpoint
+        const response = await fetch('/api/calendar', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -53,29 +76,39 @@ export default {
         console.error('Error:', error);
       }
     },
-
-    async fetchExams() {
+    async deleteExam(examId) {
       try {
-        const response = await fetch('/api/calendar');  // Updated endpoint
+        const response = await fetch(`/api/calendar/${examId}`, {
+          method: 'DELETE',
+        });
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        this.scheduledExams = await response.json();
-        localStorage.setItem('scheduledExams', JSON.stringify(this.scheduledExams));
-      } catch (err) {
-        console.error('Error:', err);
+
+        // Remove the deleted exam from the local list
+        this.scheduledExams = this.scheduledExams.filter((exam) => exam.id !== examId);
+        this.selectedExamId = ''; // Clear the selected exam
+      } catch (error) {
+        console.error('Error:', error);
       }
     },
+    async fetchExams() {
+      try {
+        const response = await fetch('/api/calendar');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        this.scheduledExams = await response.json(); // Populate scheduledExams with fetched exams
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    },
+  },
   mounted() {
-    // Load from local storage if available
-    if (localStorage.getItem('scheduledExams')) {
-      this.scheduledExams = JSON.parse(localStorage.getItem('scheduledExams'));
-    } else {
-      this.fetchExams();
-    }
-  }
-}
-}
+    this.fetchExams(); // Fetch exams when the component is mounted
+  },
+};
 </script>
 
 

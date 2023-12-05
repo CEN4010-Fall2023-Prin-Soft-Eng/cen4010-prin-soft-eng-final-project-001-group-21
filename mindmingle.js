@@ -72,17 +72,17 @@ app.post('/signup', async (req, res) => {
 // GET endpoint to fetch scheduled exams
 
 app.get('/api/calendar', async (req, res) => {
-  // If user-specific exams are not required, you can remove the ':userId' parameter.
-  // Otherwise, use req.user or similar to get the authenticated user's ID.
   try {
-    const userId = req.user ? req.user.id : null; // Adjust according to your authentication logic
-    const exams = await findScheduledExamsByUserId(userId);
-    res.json(exams);
+    const results = await pool.query('SELECT * FROM scheduled_exams');
+    // Assuming you want to send the JSON results back to the client:
+    res.status(200).json(results.rows);
   } catch (err) {
-    console.error('Error retrieving scheduled exams:', err);
-    res.status(500).json({ error: 'Server error while retrieving scheduled exams', details: err.message });
+    console.error('Error retrieving scheduled exams:', err.message);
+    // Send a generic server error message to the client
+    res.status(500).send('Server error');
   }
 });
+
 
 app.post('/api/calendar', async (req, res) => {
   try {
@@ -99,6 +99,26 @@ app.post('/api/calendar', async (req, res) => {
   } catch (err) {
     console.error('Error creating scheduled exam:', err);
     res.status(500).json({ error: 'Server error while creating scheduled exam', details: err.message });
+  }
+});
+
+app.delete('/api/calendar/:examId', async (req, res) => {
+  const examId = req.params.examId;
+
+  try {
+    // Execute the DELETE query using the PostgreSQL pool
+    const result = await pool.query('DELETE FROM scheduled_exams WHERE id = $1', [examId]);
+
+    // Check if a row was deleted
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Scheduled exam not found' });
+    }
+
+    // Send a success response if deletion is successful 
+      return res.status(204).json({ message: 'Scheduled exam deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting scheduled exam:', err);
+    res.status(500).json({ error: 'Server error while deleting scheduled exam', details: err.message });
   }
 });
 
