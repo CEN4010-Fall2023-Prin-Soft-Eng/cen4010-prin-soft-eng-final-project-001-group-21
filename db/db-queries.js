@@ -32,7 +32,14 @@ const findUserByUsername = (username) => {
 const createStudySession = (sessionData) => {
     return db('study_sessions').insert(sessionData).returning('*');
   };
-
+const findScheduledExamsByUserId = (userId) => {
+    return db('scheduled_exams').where({ user_id: userId }).orderBy('exam_date', 'asc');
+  };
+  
+const createScheduledExam = (examData) => {
+    return db('scheduled_exams').insert(examData).returning('*');
+  };
+  
 
 module.exports = {
   getUsers,
@@ -42,5 +49,7 @@ module.exports = {
   findUserByEmail,
   deleteUser,
   findUserByUsername,
-  createStudySession
+  createStudySession,
+  findScheduledExamsByUserId,
+  createScheduledExam
 };

@@ -1,20 +1,5 @@
 <template>
   <div class="calendar">
-    <div class="calendar-header">
-      <button class="nav-button" @click="previousMonth" @mouseenter="grow" @mouseleave="shrink">&lt;</button>
-      <h2>{{ currentMonthName }} {{ currentYear }}</h2>
-      <button class="nav-button" @click="nextMonth" @mouseenter="grow" @mouseleave="shrink">&gt;</button>
-    </div>
-    <div class="calendar-body">
-      <div class="day" v-for="dayOfWeek in daysOfWeek" :key="dayOfWeek">{{ dayOfWeek }}</div>
-      <div v-for="day in daysInMonth" :key="day.date" @click="selectDate(day.date)" 
-           :class="['date', { 'has-exam': isDateScheduled(day.date) }]">
-        {{ day.day }}
-        <div v-for="exam in filteredExams(day.date)" :key="exam.id">
-          {{ exam.subject }}
-        </div>
-      </div>
-    </div>
     <div class="exam-scheduler">
       <h2>Schedule Exam</h2>
       <form @submit.prevent="scheduleExam">
@@ -25,6 +10,13 @@
         <button type="submit">Schedule</button>
       </form>
     </div>
+    <h1>Scheduled Exams</h1>
+    <div id="exams-container">
+      <div v-for="exam in scheduledExams" :key="exam.id">
+        <p>{{ exam.subject }} on {{ formatExamDate(exam.exam_date) }} at {{ exam.start_time }}</p>
+        <!-- Add more exam details here -->
+      </div>
+    </div>
   </div>
 </template>
 
@@ -33,153 +25,151 @@
 export default {
   data() {
     return {
-      currentYear: new Date().getFullYear(),
-      currentMonth: new Date().getMonth(),
-      daysOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       scheduledExams: [],
-      newExam: { date: '', subject: '', start_time: '', notes: '' } // Updated newExam
+      newExam: { date: '', subject: '', start_time: '', notes: '' },
     };
   },
-  computed: {
-    currentMonthName() {
-      return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' });
-    },
-    daysInMonth() {
-      const days = [];
-      const date = new Date(this.currentYear, this.currentMonth, 1);
-      while (date.getMonth() === this.currentMonth) {
-        days.push({
-          day: date.getDate(),
-          date: new Date(date)
-        });
-        date.setDate(date.getDate() + 1);
-      }
-      return days;
-    },
-    filteredExams() {
-      return (date) => this.scheduledExams.filter(exam => exam.date === this.formatDate(date));
-    },
-    isDateScheduled() {
-      return (date) => this.scheduledExams.some(exam => exam.date === this.formatDate(date));
-    }
-  },
   methods: {
-    selectDate(date) {
-      console.log('Date selected:', date);
-    },
-    previousMonth() {
-      if (this.currentMonth === 0) {
-        this.currentMonth = 11;
-        this.currentYear -= 1;
-      } else {
-        this.currentMonth -= 1;
+    async scheduleExam() {
+      const { date, subject, start_time, notes } = this.newExam;
+      const user_id = 1; // Replace with the actual user ID logic
+
+      try {
+        const response = await fetch('/api/calendar', {  // Updated endpoint
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id, subject, exam_date: date, start_time, notes }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        this.newExam = { date: '', subject: '', start_time: '', notes: '' };
+        await this.fetchExams();
+      } catch (error) {
+        console.error('Error:', error);
       }
     },
-    nextMonth() {
-      if (this.currentMonth === 11) {
-        this.currentMonth = 0;
-        this.currentYear += 1;
-      } else {
-        this.currentMonth += 1;
+
+    async fetchExams() {
+      try {
+        const response = await fetch('/api/calendar');  // Updated endpoint
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        this.scheduledExams = await response.json();
+        localStorage.setItem('scheduledExams', JSON.stringify(this.scheduledExams));
+      } catch (err) {
+        console.error('Error:', err);
       }
-    },async mounted() {
-  try {
-    const response = await fetch('/calendar');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    },
+  mounted() {
+    // Load from local storage if available
+    if (localStorage.getItem('scheduledExams')) {
+      this.scheduledExams = JSON.parse(localStorage.getItem('scheduledExams'));
+    } else {
+      this.fetchExams();
     }
-    const data = await response.json();
-    console.log('Fetched data:', data); // Log the data to the console
-    this.scheduledExams = data; // Update your component's data with the fetched data
-  } catch (error) {
-    console.error('Error:', error);
-  }
-
-  },
-  async scheduleExam() {
-  const { date, subject, start_time, notes } = this.newExam;
-  const user_id = 1; // Replace with the actual user ID logic
-
-  try {
-    const response = await fetch('/calendar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ user_id, subject, exam_date: date, start_time, notes }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    // Instead of waiting for and using response.json(), simply reset the newExam object
-    this.newExam = { date: '', subject: '', start_time: '', notes: '' };
-  } catch (error) {
-    console.error('Error:', error);
   }
 }
-  }
 }
-
 </script>
 
 
+
 <style scoped>
+.calendar {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.nav-button {
+  background-color: #e7e7e7;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #d4d4d4;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.exam-scheduler {
+  margin-bottom: 2rem;
+}
+
+.exam-scheduler h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.exam-scheduler form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.exam-scheduler input,
+.exam-scheduler textarea {
+  border: 1px solid #ccc;
+  padding: 0.8rem;
+  font-size: 1rem;
+}
+
+.exam-scheduler textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.exam-scheduler button {
+  padding: 0.8rem;
+  border: none;
+  background-color: #5cb85c;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.exam-scheduler button:hover {
+  background-color: #4cae4c;
+}
+
+#exams-container {
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
   .calendar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 2rem;
   }
-  .calendar-header {
-    display: flex;
-    align-items: center;
-  }
-  .calendar-header .nav-button {
-    background-color: #f0f0f0;
-    border: 1px solid #d0d0d0;
-    padding: 8px 16px;
-    cursor: pointer;
-  }
-  .nav-button:hover {
-    transform: scale(1.1);
-  }
-  .calendar-body {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-  }
-  .day, .date {
-    text-align: center;
-    margin: 5px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-  }
-  .date.has-exam {
-    background-color: #ffecb3;
-  }
-  .exam-scheduler {
-    margin-top: 20px;
-  }
+
   .exam-scheduler form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
+    grid-template-columns: repeat(2, 1fr);
   }
-  .exam-scheduler input, .exam-scheduler textarea {
-    margin-bottom: 10px;
-    padding: 8px;
-  }
+
   .exam-scheduler button {
-    cursor: pointer;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
+    grid-column: span 2;
   }
-  /* Style for the container of the tables */
-
-
+}
 </style>
-

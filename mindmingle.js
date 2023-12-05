@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 const { Pool } = require('pg');
-const { getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession } = require('./db/db-queries');
+const { getUsers, findUserById, createUser, updateUser, deleteUser, findUserByUsername, createStudySession,findScheduledExamsByUserId, createScheduledExam} = require('./db/db-queries');
 const db = require('./db/db-config');
 
 // Initialize Express app
@@ -71,22 +71,36 @@ app.post('/signup', async (req, res) => {
 });
 // GET endpoint to fetch scheduled exams
 
-app.post('/calendar', async (req, res) => {
-  const { user_id, subject, exam_date, start_time, notes } = req.body;
+app.get('/api/calendar', async (req, res) => {
+  // If user-specific exams are not required, you can remove the ':userId' parameter.
+  // Otherwise, use req.user or similar to get the authenticated user's ID.
   try {
-    // Assuming you have a 'pool' for database connections
-    await pool.query(
-      'INSERT INTO scheduled_exams (user_id, subject, exam_date, start_time, notes) VALUES ($1, $2, $3, $4, $5)',
-      [user_id, subject, exam_date, start_time, notes]
-    );
-
-    res.status(204).send(); // Respond with a success status (204 No Content)
+    const userId = req.user ? req.user.id : null; // Adjust according to your authentication logic
+    const exams = await findScheduledExamsByUserId(userId);
+    res.json(exams);
   } catch (err) {
-    console.error('Error scheduling exam:', err);
-    res.status(500).send('Server error');
+    console.error('Error retrieving scheduled exams:', err);
+    res.status(500).json({ error: 'Server error while retrieving scheduled exams', details: err.message });
   }
 });
 
+app.post('/api/calendar', async (req, res) => {
+  try {
+    const examData = {
+      user_id: req.body.user_id,
+      subject: req.body.subject,
+      exam_date: req.body.exam_date,
+      start_time: req.body.start_time,
+      notes: req.body.notes
+    };
+
+    const newExam = await createScheduledExam(examData);
+    res.status(201).json(newExam[0]); // Assuming 'returning("*")' in your query
+  } catch (err) {
+    console.error('Error creating scheduled exam:', err);
+    res.status(500).json({ error: 'Server error while creating scheduled exam', details: err.message });
+  }
+});
 
 // Authentication middleware using JWT
 function authenticateToken(req, res, next) {
