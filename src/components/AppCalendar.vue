@@ -22,19 +22,19 @@
     <div v-if="selectedExam">
       <h3>Selected Exam Details</h3>
       <p><strong>Subject:</strong> {{ selectedExam.subject }}</p>
-      <p><strong>Date:</strong> {{ selectedExam.exam_date }}</p>
-      <p><strong>Start Time:</strong> {{ selectedExam.start_time }}</p>
+      <p><strong>Date:</strong> {{ formatExamDate(selectedExam.exam_date) }}</p>
+      <p><strong>Start Time:</strong> {{ formatExamTime(selectedExam.start_time) }}</p>
+      <p><strong>Notes:</strong> {{ selectedExam.notes }}</p> <!-- Added Notes field -->
     </div>
-    <div>
       <h3>List of Scheduled Exams</h3>
       <ul>
         <li v-for="exam in scheduledExams" :key="exam.id">
-          {{ exam.subject }} - {{ exam.exam_date }} - {{ exam.start_time }}
+          {{ exam.subject }} - {{ formatExamDate(exam.exam_date) }} - {{ formatExamTime(exam.start_time) }}
         </li>
       </ul>
     </div>
-  </div>
 </template>
+
 
 
 
@@ -103,6 +103,13 @@ export default {
       } catch (error) {
         console.error('Error:', error);
       }
+    },
+    formatExamDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    formatExamTime(timeString) {
+      return new Date(`2000-01-01T${timeString}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     },
   },
   mounted() {
