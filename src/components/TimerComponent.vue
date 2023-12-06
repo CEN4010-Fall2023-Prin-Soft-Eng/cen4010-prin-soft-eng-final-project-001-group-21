@@ -80,87 +80,81 @@ export default {
 
 
 <style scoped>
-body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
-  line-height: 1.6;
-}
-
-header, footer, .container {
-  margin: auto;
-  padding: 0 20px;
-}
-
-header {
-  background: #333;
-  color: #fff;
-  padding-top: 30px;
-  min-height: 70px;
-  border-bottom: #eee solid 1px;
-}
-
-header a {
-  color: #fff;
-  text-decoration: none;
-  text-transform: uppercase;
-  margin: 0 15px;
-}
-
 .container {
-  max-width: 1200px;
-  margin-top: 30px;
+  max-width: 800px;
+  margin: 20px auto;
   padding: 20px;
-  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background-color: #fff; /* White background */
+  font-family: 'Arial', sans-serif;
 }
 
-button, select {
-  background: #333;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
+h1, h2, label {
+  text-align: center;
+  color: #333;
 }
 
-button:hover, select:hover {
-  opacity: 0.9;
+h1 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem; /* Larger font size for the main title */
 }
 
-textarea, select {
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+select {
   width: 100%;
   padding: 10px;
-}
-
-.card {
-  background: #fff;
-  margin-bottom: 20px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
 }
 
-.quote {
-  font-style: italic;
-  opacity: 0.6;
+.alert {
+  text-align: center;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 1rem;
+  font-size: 1.1rem;
 }
 
-.timer {
-  font-size: 1.5em;
-  margin-top: 20px;
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+button {
+  background-color: rgb(175, 76, 160); /* Purple color */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+  background-color: rgb(155, 66, 140); /* Slightly darker purple on hover */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+@media (max-width: 600px) {
   .container {
-    width: 95%;
-    padding: 0;
-  }
-  
-  header, footer, .container {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 1rem;
   }
 }
 </style>
+

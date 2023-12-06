@@ -100,13 +100,20 @@ export default {
 </script>
 
 <style scoped>
-.study-sessions-table, .scheduled-exams-table {
+.study-sessions-table {
   max-width: 100%;
   margin: 20px auto;
   border-collapse: collapse;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   overflow: hidden;
+  font-family: 'Arial', sans-serif;
+}
+
+h2 {
+  text-align: center;
+  color: rgb(175, 76, 160); /* Purple color for the title */
+  margin-bottom: 20px;
 }
 
 table {
@@ -115,19 +122,15 @@ table {
 }
 
 table th, table td {
-  padding: 10px;
+  padding: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
 table th {
-  background-color: #f8f8f8;
-  color: #333;
+  background-color: rgb(175, 76, 160); /* Purple color for headers */
+  color: white;
   font-weight: bold;
-}
-
-table tr:last-child td {
-  border-bottom: none;
 }
 
 table tbody tr:nth-child(even) {
@@ -142,6 +145,15 @@ table tbody tr:nth-child(even) {
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
   margin: 20px auto;
   border-radius: 5px;
-  max-width: 50%;
+  max-width: 60%;
+}
+
+@media (max-width: 600px) {
+  .study-sessions-table {
+    margin: 10px;
+  }
+  .total-time-studied {
+    max-width: 80%;
+  }
 }
 </style>

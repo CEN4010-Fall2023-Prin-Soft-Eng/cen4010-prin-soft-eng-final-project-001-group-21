@@ -156,7 +156,7 @@
 
 h1 {
   text-align: center;
-  color: #333;
+  color: rgb(175, 76, 160);
   margin-bottom: 1.5rem;
 }
 
@@ -168,7 +168,7 @@ form {
 
 label {
   margin-bottom: 0.5rem;
-  color: rgb(175, 76, 160);
+  color: rgb(15, 1, 13);
   font-weight: bold;
 }
 
@@ -199,7 +199,7 @@ button {
 }
 
 button:hover {
-  background-color: rgb(155, 66, 140); /* Slightly darker on hover */
+  background-color: rgb(255, 49, 221); /* Slightly darker on hover */
   transform: translateY(-2px); /* Lift effect */
 }
 

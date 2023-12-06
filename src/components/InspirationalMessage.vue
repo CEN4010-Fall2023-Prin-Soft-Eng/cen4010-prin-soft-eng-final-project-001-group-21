@@ -49,13 +49,13 @@ export default {
   
 <style scoped>
 .inspirational-message {
-  background-color: #f0f8ff; /* Soft blue background */
+  background-color: #e4dcfb; /* purple blue background */
   padding: 20px;
   border-radius: 10px;
   margin: 20px 0;
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* subtle shadow for depth */
-  border-left: 5px solid #3498db; /* a colored border on the left for accent */
+  border-left: 5px solid #9e8ff4; /* a colored border on the left for accent */
   font-family: 'Arial', sans-serif; /* clean, readable font */
   color: #333; /* dark gray color for text */
 }

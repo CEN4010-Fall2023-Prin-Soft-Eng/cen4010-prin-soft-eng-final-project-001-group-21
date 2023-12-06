@@ -187,16 +187,22 @@ button[type="submit"] {
   color: white;
 }
 
-button[type="submit"]:hover,
-button:not([type]):hover {
-  background-color: rgb(208, 128, 196);
+/* Hover effect for Schedule button */
+button[type="submit"]:hover {
+  background-color: rgb(216, 100, 197); /* Darker purple on hover */
   transform: translateY(-2px); /* Lift effect */
 }
 
+/* Delete button style */
 button:not([type]) {
-  background-color: #ff0000; /* Orange color */
-  margin-left: 10px; /* Space from dropdown */
+  background-color: #ffc400; /* Orange color */
   color: white;
+}
+
+/* Hover effect for Delete button */
+button:not([type]):hover {
+  background-color: #e50000; /* Darker orange on hover */
+  transform: translateY(-2px); /* Lift effect */
 }
 
 select {
