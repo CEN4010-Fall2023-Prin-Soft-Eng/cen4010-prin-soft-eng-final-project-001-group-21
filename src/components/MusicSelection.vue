@@ -57,45 +57,53 @@
   </template>
   
   <script>
-import Timer from './TimerComponent.vue';
-import InspirationalMessage from './InspirationalMessage.vue';
-
-export default {
-  components: {
-    InspirationalMessage,
-    Timer
-  },
-  data() {
-    return {
-      selectionData: {
-        date: '',
-        start_time: '',
-        end_time: '',
-        subject: '',
-        notes: '',
-      },
-      message: '',
-      messageColor: '',
-    };
-  },
-  created() {
-  this.selectionData.date = new Date().toISOString().split('T')[0];
-  this.selectionData.start_time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-},
-  methods: {
-    prefillEndTime() {
-  this.selectionData.end_time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  this.createMusicSelection();
-},
-    createMusicSelection() {
-      fetch('/api/study-sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+  import Timer from './TimerComponent.vue';
+  import InspirationalMessage from './InspirationalMessage.vue';
+  
+  export default {
+    components: {
+      InspirationalMessage,
+      Timer
+    },
+    data() {
+      return {
+        selectionData: {
+          date: '',
+          start_time: '',
+          end_time: '',
+          subject: '',
+          notes: '',
         },
-        body: JSON.stringify(this.selectionData),
-      })
+        message: '',
+        messageColor: '',
+        timerRunning: false, // Add a flag to track the timer state
+      };
+    },
+    created() {
+      this.selectionData.date = new Date().toISOString().split('T')[0];
+      this.selectionData.start_time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      this.timerRunning = true; // Start the timer initially
+    },
+    methods: {
+      prefillEndTime() {
+        // Call the stopTimer method from the Timer component
+        if (this.$refs.timer && this.timerRunning) {
+          this.$refs.timer.stopTimer();
+          this.timerRunning = false;
+        }
+        this.selectionData.end_time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        this.createMusicSelection();
+      },
+      createMusicSelection() {
+        // Make sure to handle the promise correctly with async/await or then/catch
+        fetch('/api/study-sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(this.selectionData),
+        })
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok: ' + response.statusText);
