@@ -143,20 +143,21 @@
   },
 };
 </script>
-  
 <style scoped>
 .container {
   max-width: 800px;
-  margin: auto;
+  margin: 20px auto;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  background-color: #ffffff; /* White background for less blue */
 }
 
 h1 {
   text-align: center;
-  color: #3498db;
-  font-family: Arial, sans-serif;
+  color: #333; /* Darker text for better contrast */
+  font-family: 'Arial', sans-serif;
+  margin-bottom: 30px;
 }
 
 form {
@@ -167,9 +168,10 @@ form {
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   color: #333;
   font-weight: bold;
+  font-family: 'Arial', sans-serif;
 }
 
 input[type="text"],
@@ -178,8 +180,9 @@ input[type="time"],
 textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd; /* Lighter border */
   border-radius: 4px;
+  font-family: 'Arial', sans-serif;
 }
 
 textarea {
@@ -188,39 +191,53 @@ textarea {
 }
 
 button {
-  background-color: #3498db;
+  background-color: #5cb85c; /* Green color for the button */
   color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-family: 'Arial', sans-serif;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 button:hover {
-  background-color: #2874a6;
+  background-color: #4cae4c; /* Darker green on hover */
+  transform: translateY(-2px); /* Lift effect */
 }
 
 #messageBox {
   text-align: center;
   margin-top: 20px;
   font-size: 1.2rem;
+  color: #555; /* Subtle text color for the message box */
 }
 
-.timer-component {
+.timer-component,
+.inspirational-message-container {
   margin-top: 20px;
 }
 
-.inspirational-message-container {
+.router-link button {
+  display: inline-block;
   margin-top: 20px;
   text-align: center;
 }
 
 .router-link {
   text-decoration: none;
+  display: block;
+  margin-top: 10px;
 }
 
-.router-link button {
-  margin-top: 20px;
+@media (max-width: 600px) {
+  .container {
+    margin: 20px 10px;
+    padding: 15px;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+  }
 }
 </style>

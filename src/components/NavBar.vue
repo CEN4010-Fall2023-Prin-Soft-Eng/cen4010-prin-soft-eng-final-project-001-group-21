@@ -14,7 +14,7 @@
     >Study Session</ButtonComponent>
     <!-- New ButtonComponent for Music Selection -->
     <ButtonComponent
-      :isActive="isPageActive('Focus Session')"
+      :isActive="isPageActive('music-selection')"
       @button-click="navigateTo('music-selection')"
     >Focus Session</ButtonComponent>
   </nav>

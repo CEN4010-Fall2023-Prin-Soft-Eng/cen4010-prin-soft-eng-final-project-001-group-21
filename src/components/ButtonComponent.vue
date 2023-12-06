@@ -35,8 +35,8 @@ button {
   cursor: pointer; /* change mouse cursor to indicate clickable */
 }
 button.active {
-  background-color: #4CAF50; /* green background for active button */
+  background-color: rgb(175, 76, 160); /* green background for active button */
   color: white; /* white text color for better contrast on green bg */
-  border-color: #367a38; /* darker green border for some depth */
+  border-color: #7a3678; /* darker green border for some depth */
 }
 </style>

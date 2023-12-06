@@ -184,7 +184,7 @@ h2 {
 .exam-scheduler button {
   padding: 0.8rem;
   border: none;
-  background-color: #5cb85c;
+  background-color: rgb(175, 76, 160);
   color: white;
   font-size: 1rem;
   cursor: pointer;
@@ -192,7 +192,7 @@ h2 {
 }
 
 .exam-scheduler button:hover {
-  background-color: #4cae4c;
+  background-color:  rgb(221, 120, 206);
 }
 
 #exams-container {
