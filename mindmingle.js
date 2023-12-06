@@ -86,13 +86,19 @@ app.post('/signup', async (req, res) => {
 
 app.get('/api/calendar', async (req, res) => {
   try {
-    const results = await pool.query('SELECT * FROM scheduled_exams');
-    // Assuming you want to send the JSON results back to the client:
+    let query = 'SELECT * FROM scheduled_exams';
+    const queryParams = [];
+
+    if (req.query.query) {
+      query += ' WHERE subject ILIKE $1'; 
+      queryParams.push(`%${req.query.query}%`);
+    }
+
+    const results = await pool.query(query, queryParams);
     res.status(200).json(results.rows);
   } catch (err) {
     console.error('Error retrieving scheduled exams:', err.message);
-    // Send a generic server error message to the client
-    res.status(500).send('Server error');
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -134,6 +140,7 @@ app.delete('/api/calendar/:examId', async (req, res) => {
     res.status(500).json({ error: 'Server error while deleting scheduled exam', details: err.message });
   }
 });
+
 
 // Authentication middleware using JWT
 function authenticateToken(req, res, next) {

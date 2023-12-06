@@ -13,14 +13,8 @@
 
     <!-- Main Content Section -->
     <main>
-      <h2>Welcome, <span id="username"></span>!</h2>
-      <p>This is the home page of Mind Mingle. Explore and connect with others!</p>
-      
-      <!-- Streak Section -->
-      <div id="streak-section">
-        <p>Your Current Streak: <span id="streak-count"></span></p>
-        <p id="streak-message"></p>
-      </div>
+      <h2>Welcome to Mind Mingle!</h2>
+      <p>Where studying is made easier.</p>
     </main>
 
     <!-- Footer Section -->
@@ -28,16 +22,33 @@
       <p>&copy; 2023 Mind Mingle. All rights reserved.</p>
     </footer>
   </div>
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input type="text" v-model="searchQuery" placeholder="Search exams..." class="search-input">
+    <button @click="searchExams" class="search-button">Search</button>
+  </div>
+
+  <!-- Search Results -->
+  <div v-if="searchResults.length">
+    <ul>
+      <li v-for="exam in searchResults" :key="exam.id">
+        {{ exam.subject }} - {{ exam.exam_date }} at {{ exam.start_time }}
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import mindMingleLogo from '@/assets/mindmingle.png'; // Adjust the path if necessary
+import axios from 'axios'; // Import axios for HTTP requests
 
 export default {
   data() {
     return {
       mindMingleLogo: mindMingleLogo, // Make the logo image available to the template
+      searchQuery: '', // Data property for the search query
+      searchResults: [] // Data property to store search results
     };
   },
   computed: {
@@ -45,7 +56,7 @@ export default {
   },
   methods: {
     ...mapActions(['logout']),
-    
+
     handleLogout() {
       this.logout().then(() => {
         this.$router.push('/login');
@@ -53,45 +64,56 @@ export default {
         console.error('Logout failed:', error);
       });
     },
+
+    async searchExams() {
+      try {
+        // Adjust the URL as per your API endpoint
+        const response = await axios.get(`/api/calendar?query=${this.searchQuery}`);
+        this.searchResults = response.data;
+      } catch (error) {
+        console.error('Error during exam search:', error);
+        // Handle error scenarios, for example, showing a message to the user
+      }
+    }
   }
 };
 </script>
 
+
 <style scoped>
 .header-background {
-  background-image: url('@/assets/books-2.png'); /* The path might need to be adjusted */
+  background-image: url('@/assets/books-2.png');
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: center; /* Center the background image */
-  color: #fff; /* White text color */
-  text-align: center;
-  position: relative; /* Set the position context for absolute children */
+  background-position: center;
+  color: #fff;
+  text-align: center; /* Center text in the header */
+  position: relative;
   padding: auto;
   height: 400px;
-  width:auto; 
+  width: auto; 
 }
 
 .logo-image {
   position: absolute;
-  top: 48%; /* Reduced from 60% to move the logo up */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%); /* Adjust the positioning to truly center the logo */
-  width: 600px; /* Adjust the width as needed */
-  height: auto; /* Maintain aspect ratio */
-  z-index: 10; /* Make sure the logo is above the background image */
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: auto;
+  z-index: 10;
   margin-bottom: -20px;
   margin-top: 80px;
   animation: flicker 0.9s infinite alternate;
 }
 
-/* Flicker animation */
 @keyframes flicker {
-  0% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-  }
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+main {
+  text-align: center; /* Center text in the main content */
 }
 
 .logout-container {
@@ -117,6 +139,48 @@ export default {
   background-color: #357ae8;
   transform: scale(1.1);
 }
+footer {
+  text-align: center; /* Center text in the footer */
+  padding: 20px; /* Add padding for better spacing */
+}
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
 
-/* Additional styles can go here */
+.search-input {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-right: none; /* Remove right border */
+  outline: none;
+  border-radius: 5px 0 0 5px; /* Rounded corners on the left side */
+  width: 300px; /* Adjust as needed */
+}
+
+.search-button {
+  padding: 12px 20px;
+  border: 2px solid #4285F4;
+  background-color: #4285F4;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 0 5px 5px 0; /* Rounded corners on the right side */
+  transition: background-color 0.2s;
+}
+footer {
+  text-align: center; /* Center text in the footer */
+  padding: 20px; /* Add padding for better spacing */
+  background-color: #f5f5f5; /* Footer background color */
+  border-top: 2px solid #ddd; /* Top border for the footer */
+  position: absolute; /* Position the footer at the bottom */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+.search-button:hover {
+  background-color: #357ae8;
+}
 </style>

@@ -101,7 +101,7 @@ button.login-button {
 }
 
 button.login-button:hover {
-  background-color: #ff0000; /* Change or remove this line if you want a different hover effect */
+  background-color: #d900ff; /* Change or remove this line if you want a different hover effect */
   transform: translateY(-2px);
 }
 

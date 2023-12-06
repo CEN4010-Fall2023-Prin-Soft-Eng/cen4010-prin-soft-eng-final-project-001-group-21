@@ -126,7 +126,7 @@ label {
 }
 
 .signup-button {
-  width: 100%;
+  width: 90%;
   padding: 15px 20px; /* Padding to match the input fields */
   font-size: 18px; /* Font size to match the input fields */
   border-radius: 5px;
