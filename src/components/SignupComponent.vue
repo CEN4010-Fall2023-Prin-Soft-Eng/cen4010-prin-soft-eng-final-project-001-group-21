@@ -1,23 +1,33 @@
 <template>
   <div class="signup-container">
-    <h2 class="center">Sign Up</h2>
-    <form @submit.prevent="signup" class="center">
-      <label for="signup-username">Username:</label>
-      <input type="text" id="signup-username" v-model="username" class="form-input" required>
+    <h2>Sign Up</h2>
+    <form @submit.prevent="signup">
+      <div class="form-group">
+        <label for="signup-username">Username:</label>
+        <input type="text" id="signup-username" v-model="username" required>
+      </div>
 
-      <label for="signup-email">Email:</label>
-      <input type="email" id="signup-email" v-model="email" class="form-input" required>
+      <div class="form-group">
+        <label for="signup-email">Email:</label>
+        <input type="email" id="signup-email" v-model="email" required>
+      </div>
 
-      <label for="signup-password">Password:</label>
-      <input type="password" id="signup-password" v-model="password" class="form-input" required autocomplete="new-password">
+      <div class="form-group">
+        <label for="signup-password">Password:</label>
+        <input type="password" id="signup-password" v-model="password" required autocomplete="new-password">
+      </div>
 
-      <label for="signup-confirm-password">Confirm Password:</label>
-      <input type="password" id="signup-confirm-password" v-model="confirmPassword" class="form-input" required>
+      <div class="form-group">
+        <label for="signup-confirm-password">Confirm Password:</label>
+        <input type="password" id="signup-confirm-password" v-model="confirmPassword" required>
+        <span v-if="passwordMismatch" class="error-message">Passwords do not match.</span>
+      </div>
 
       <button type="submit" class="signup-button">Sign Up</button>
     </form>
-    <div class="center">
-      <h2>Already have an account? <a href="/login">Login</a></h2>
+    <p class="login-prompt">Already have an account? <router-link to="/login">Login</router-link></p>
+    <div v-if="feedbackMessage" :class="{'success-message': success, 'error-message': !success}">
+      {{ feedbackMessage }}
     </div>
   </div>
 </template>
@@ -33,28 +43,33 @@ export default {
     const email = ref('');
     const password = ref('');
     const confirmPassword = ref('');
+    const passwordMismatch = ref(false);
+    const feedbackMessage = ref('');
+    const success = ref(false);
     const router = useRouter();
 
     const signup = async () => {
-      // Form validation logic here (if needed)
-
       if (password.value !== confirmPassword.value) {
-        // Show a more integrated error message instead of alert
+        passwordMismatch.value = true;
+        feedbackMessage.value = 'Passwords do not match.';
         return;
       }
+      passwordMismatch.value = false;
 
       try {
-        const response = await axios.post('/signup', {
+        // Since the 'response' variable is not being used, you can omit it
+        await axios.post('/signup', {
           username: username.value,
           email: email.value,
           password: password.value
         });
-        console.log('Signup successful', response);
-        // Reset form fields here if needed
-        router.push('/login');
+        feedbackMessage.value = 'Signup successful. Redirecting to login...';
+        success.value = true;
+        setTimeout(() => router.push('/login'), 3000);
       } catch (error) {
-        console.error('Signup failed:', error);
-        // Show a more integrated error message instead of alert
+        // Make sure to handle the case where error.response may not exist
+        feedbackMessage.value = 'Signup failed: ' + (error.response ? error.response.data : error.message);
+        success.value = false;
       }
     };
 
@@ -63,64 +78,105 @@ export default {
       email,
       password,
       confirmPassword,
+      passwordMismatch,
+      feedbackMessage,
+      success,
       signup
     };
   }
 };
 </script>
 
-<style>
-    /* Basic styling for the navigation bar */
-    ul.navbar {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        background-color: #333;
-        overflow: hidden;
-    }
 
-    li.nav-item {
-        float: left;
-    }
+<style scoped>
+.signup-container {
+  max-width: 450px; /* Adjusted width to accommodate larger fields */
+  margin: 50px auto;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
 
-    li.nav-item a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-    }
+h2 {
+  color: #333;
+  margin-bottom: 30px;
+}
 
-    /* Style for the registration form container */
-    .signup-container {
-        margin: 20px auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        max-width: 300px;
-        background-color: #f9f9f9;
-    }
+.form-group {
+  margin-bottom: 25px; /* Increased space between form groups */
+}
 
-    /* Style for form fields */
-    .form-input {
-        width: 100%;
-        padding: 10px;
-        margin: 5px 0;
-        box-sizing: border-box;
-    }
+label {
+  display: block;
+  margin-bottom: 10px; /* More space below the label */
+  font-weight: bold;
+  color: #555;
+}
 
-    /* Style for the sign-up button */
-    .signup-button {
-        background-color: #428bca;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 10px; /* Add some spacing between form fields and the sign-up button */
-    }
+.form-input {
+  width: 100%; /* Full width of the container */
+  padding: 15px 20px; /* Larger padding for a taller input box */
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px; /* Slightly rounded corners for aesthetics */
+  font-size: 18px; /* Larger font size for better readability */
+  box-sizing: border-box; /* Ensures padding doesn't affect the overall width */
+}
 
-    /* Center the form */
-    .center {
-        text-align: center;
-    }
+.signup-button {
+  width: 100%;
+  padding: 15px 20px; /* Padding to match the input fields */
+  font-size: 18px; /* Font size to match the input fields */
+  border-radius: 5px;
+  border: none;
+  background-color: rgb(175, 76, 160); /* Purple color for the button */
+  color: white;
+  cursor: pointer;
+  margin-top: 20px; /* Space between the last input and the button */
+  transition: background-color 0.3s;
+}
+
+.signup-button:hover {
+  background-color: rgb(150, 50, 140);
+  transform: translateY(-2px);
+}
+
+.error-message {
+  color: #d9534f;
+}
+
+.success-message {
+  color: #5cb85c;
+}
+
+.login-prompt {
+  margin-top: 25px;
+}
+
+.login-prompt a {
+  color: rgb(175, 76, 160);
+  text-decoration: none;
+}
+
+.login-prompt a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .signup-container {
+    width: 95%;
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  .form-input, .signup-button {
+    width: 100%; /* Full width on smaller screens */
+    padding: 15px; /* Consistent padding on smaller screens */
+  }
+}
 </style>

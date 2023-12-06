@@ -1,19 +1,21 @@
 <template>
-  <div class="signup-container">
-    <h2 class="center">Login</h2>
-    <form @submit.prevent="login" class="center">
-      <label for="login-username">Username:</label>
-      <input type="text" id="login-username" v-model="username" class="form-input" required>
-      
-      <label for="login-password">Password:</label>
-      <input type="password" id="login-password" v-model="password" class="form-input" required autocomplete="current-password">
-      
-      <button type="submit" class="form-button">Login</button>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form @submit.prevent="login">
+      <div class="form-group">
+        <label for="login-username">Username:</label>
+        <input type="text" id="login-username" v-model="username" required>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" v-model="password" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="login-button">Login</button>
     </form>
 
-    <div class="center">
-      <h2>Don't have an account? <router-link :to="{ name: 'signup' }">Sign Up</router-link></h2>
-    </div>
+    <p class="signup-prompt">Don't have an account? <router-link to="/signup">Sign Up</router-link></p>
   </div>
 </template>
 
@@ -53,35 +55,67 @@ export default {
 };
 </script>
 
-<style>
-  .signup-container {
-      margin: 20px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      max-width: 300px;
-      background-color: #f9f9f9;
-  }
+<style scoped>
+.login-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
 
-  .form-input {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      box-sizing: border-box;
-  }
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
 
-  .form-button {
-      background-color: #428bca;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
-  }
+.form-group {
+  margin-bottom: 20px;
+}
 
-  .center {
-      text-align: center;
-  }
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button.login-button {
+  width: 100%;
+  padding: 10px;
+  background-color: rgb(175, 76, 160); /* The specified purple color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+button.login-button:hover {
+  background-color: #ff0000; /* Change or remove this line if you want a different hover effect */
+  transform: translateY(-2px);
+}
+
+.signup-prompt {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.router-link {
+  color: rgb(175, 76, 160);
+  text-decoration: none;
+}
+
+.router-link:hover {
+  text-decoration: underline;
+}
 </style>
-
-  

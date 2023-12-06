@@ -56,19 +56,32 @@ app.post('/login', async (req, res) => {
 app.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    const existingUser = await findUserByUsername(username);
-    if (existingUser) return res.status(409).send('Username already taken');
-
-    const existingEmail = await findUserByEmail(email);
-    if (existingEmail) return res.status(409).send('Email already in use');
-
+    // Hash the password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userId = await createUser({ username, email, password: hashedPassword });
-    res.status(201).send({ userId, message: 'User successfully created' });
-  } catch (err) {
-    res.status(500).send('Error signing up user');
+
+    // Create the new user in the database
+    const result = await pool.query(
+      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
+      [username, email, hashedPassword]
+    );
+
+    // If the insert was successful, send back a success response
+    res.status(201).json({ userId: result.rows[0].id, message: 'User successfully created' });
+  } catch (error) {
+    // Check for unique constraint violation errors
+    if (error.code === '23505') {
+      if (error.detail.includes('username')) {
+        res.status(409).json({ error: 'Username already taken' });
+      } else if (error.detail.includes('email')) {
+        res.status(409).json({ error: 'Email already in use' });
+      }
+    } else {
+      // If the error is not a unique constraint violation, send a generic server error
+      res.status(500).json({ error: 'Error signing up user' });
+    }
   }
 });
+
 // GET endpoint to fetch scheduled exams
 
 app.get('/api/calendar', async (req, res) => {
