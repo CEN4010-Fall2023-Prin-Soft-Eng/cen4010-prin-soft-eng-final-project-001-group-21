@@ -28,12 +28,12 @@
       <span style="font-size: 1px; padding: 0;">Study Hard!</span>
       </button>
         <!-- Button to prefill end time -->
-        <button type="button" @click="prefillEndTime" style="background: none; border: 1px solid #3498db; color: #3498db; padding: 5px 10px; font: inherit; cursor: pointer; border-radius: 5px; transition: background 0.3s, color 0.3s;">
+        <button type="button" @click="prefillEndTime" style="background: none; border: 1px solid rgb(175, 76, 160);; color: rgb(175, 76, 160);; padding: 5px 10px; font: inherit; cursor: pointer; border-radius: 5px; transition: background 0.3s, color 0.3s;">
     End Study Session</button>
   
       <!-- Button to navigate to StudySessions.vue -->
           <router-link to="/study-sessions">
-    <button type="button" style="background: none; border: 1px solid #3498db; color: #3498db; padding: 5px 10px; font: inherit; cursor: pointer; border-radius: 5px; transition: background 0.3s, color 0.3s;">
+    <button type="button" style="background: none; border: 1px solid rgb(175, 76, 160);; color: rgb(175, 76, 160); padding: 5px 10px; font: inherit; cursor: pointer; border-radius: 5px; transition: background 0.3s, color 0.3s;">
       Go back to Study Sessions
     </button>
         </router-link>
@@ -146,32 +146,30 @@
 <style scoped>
 .container {
   max-width: 800px;
-  margin: 20px auto;
+  margin: auto;
   padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background-color: #ffffff; /* White background for less blue */
+  background-color: #fff; /* White background */
+  font-family: 'Arial', sans-serif;
 }
 
 h1 {
   text-align: center;
-  color: #333; /* Darker text for better contrast */
-  font-family: 'Arial', sans-serif;
-  margin-bottom: 30px;
+  color: #333;
+  margin-bottom: 1.5rem;
 }
 
 form {
   display: grid;
-  grid-gap: 20px;
-  padding: 20px;
+  grid-gap: 1rem;
+  padding: 1rem 0;
 }
 
 label {
-  display: block;
-  margin-bottom: 10px;
-  color: #333;
+  margin-bottom: 0.5rem;
+  color: rgb(175, 76, 160);
   font-weight: bold;
-  font-family: 'Arial', sans-serif;
 }
 
 input[type="text"],
@@ -180,9 +178,9 @@ input[type="time"],
 textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd; /* Lighter border */
+  border: 1px solid #ccc;
   border-radius: 4px;
-  font-family: 'Arial', sans-serif;
+  font-size: 1rem;
 }
 
 textarea {
@@ -191,53 +189,32 @@ textarea {
 }
 
 button {
-  background-color: #5cb85c; /* Green color for the button */
+  background-color: rgb(175, 76, 160); /* Specified color for buttons */
   color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-family: 'Arial', sans-serif;
   transition: background-color 0.3s, transform 0.3s;
 }
 
 button:hover {
-  background-color: #4cae4c; /* Darker green on hover */
+  background-color: rgb(155, 66, 140); /* Slightly darker on hover */
   transform: translateY(-2px); /* Lift effect */
 }
 
-#messageBox {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 1.2rem;
-  color: #555; /* Subtle text color for the message box */
-}
-
-.timer-component,
-.inspirational-message-container {
-  margin-top: 20px;
-}
-
 .router-link button {
-  display: inline-block;
-  margin-top: 20px;
-  text-align: center;
-}
-
-.router-link {
-  text-decoration: none;
-  display: block;
-  margin-top: 10px;
+  margin-top: 1rem;
 }
 
 @media (max-width: 600px) {
   .container {
-    margin: 20px 10px;
-    padding: 15px;
+    padding: 1rem;
   }
 
-  h1 {
-    margin-bottom: 20px;
+  .router-link button {
+    width: 100%;
+    margin-top: 1rem;
   }
 }
 </style>

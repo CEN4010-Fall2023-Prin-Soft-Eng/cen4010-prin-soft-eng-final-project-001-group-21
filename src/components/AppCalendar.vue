@@ -123,93 +123,114 @@ export default {
 <style scoped>
 .calendar {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 30px auto;
   padding: 2rem;
   background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 2rem;
+h1, h2, h3 {
+  text-align: center;
+  color: #333;
+  font-family: 'Arial', sans-serif;
 }
 
-.nav-button {
-  background-color: #e7e7e7;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: background-color 0.3s;
-}
-
-.nav-button:hover {
-  background-color: #d4d4d4;
+h1 {
+  margin: 1rem 0;
 }
 
 h2 {
-  font-size: 1.8rem;
-  color: #333;
+  font-size: 1.5rem;
+  margin: 1rem 0;
 }
 
 .exam-scheduler {
   margin-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 2rem;
 }
 
-.exam-scheduler h2 {
-  font-size: 1.5rem;
-  color: #333;
+form {
+  display: grid;
+  grid-gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.exam-scheduler form {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.5rem;
+input[type="date"],
+input[type="text"],
+input[type="time"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Arial', sans-serif;
 }
 
-.exam-scheduler input,
-.exam-scheduler textarea {
-  border: 1px solid #ccc;
-  padding: 0.8rem;
-  font-size: 1rem;
-}
-
-.exam-scheduler textarea {
-  height: 100px;
+textarea {
+  height: 100px; /* Reduced height */
   resize: vertical;
 }
 
-.exam-scheduler button {
-  padding: 0.8rem;
+button {
+  padding: 10px 20px;
   border: none;
-  background-color: rgb(175, 76, 160);
-  color: white;
-  font-size: 1rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-family: 'Arial', sans-serif;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
-.exam-scheduler button:hover {
-  background-color:  rgb(221, 120, 206);
+button[type="submit"] {
+  background-color: rgb(175, 76, 160); /* purple color */
+  color: white;
 }
 
-#exams-container {
-  margin-top: 1rem;
+button[type="submit"]:hover,
+button:not([type]):hover {
+  background-color: rgb(208, 128, 196);
+  transform: translateY(-2px); /* Lift effect */
+}
+
+button:not([type]) {
+  background-color: #ff0000; /* Orange color */
+  margin-left: 10px; /* Space from dropdown */
+  color: white;
+}
+
+select {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background-color: #fafafa;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+li:last-child {
+  border-bottom: none;
 }
 
 @media (min-width: 768px) {
-  .calendar {
-    padding: 2rem;
-  }
-
   .exam-scheduler form {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .exam-scheduler button {
-    grid-column: span 2;
+  button[type="submit"] {
+    grid-column: span 2; /* Button spans both columns */
+  }
+
+  ul {
+    padding-left: 20px; /* Padding for list */
   }
 }
 </style>
