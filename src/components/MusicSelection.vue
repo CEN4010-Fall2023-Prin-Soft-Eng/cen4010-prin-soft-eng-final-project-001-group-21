@@ -57,131 +57,162 @@
   </template>
   
   <script>
-  import Timer from './TimerComponent.vue';
-  import InspirationalMessage from './InspirationalMessage.vue';
-  export default {
-    components: {
-    InspirationalMessage,Timer},
-    data() {
-      return {
-        selectionData: {
-          date: '',
-          start_time: '',
-          end_time: '',
-          subject: '',
-          notes: '',
+import Timer from './TimerComponent.vue';
+import InspirationalMessage from './InspirationalMessage.vue';
+
+export default {
+  components: {
+    InspirationalMessage,
+    Timer
+  },
+  data() {
+    return {
+      selectionData: {
+        date: '',
+        start_time: '',
+        end_time: '',
+        subject: '',
+        notes: '',
+      },
+      message: '',
+      messageColor: '',
+    };
+  },
+  created() {
+  this.selectionData.date = new Date().toISOString().split('T')[0];
+  this.selectionData.start_time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+},
+  methods: {
+    prefillEndTime() {
+  this.selectionData.end_time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  this.createMusicSelection();
+},
+    createMusicSelection() {
+      fetch('/api/study-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        message: '',
-        messageColor: '',
+        body: JSON.stringify(this.selectionData),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.id) {
+          this.displaySuccessMessage();
+        } else {
+          this.displayErrorMessage(data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        this.displayErrorMessage('An error occurred while creating the selection: ' + (error.message || 'Check console for details.'));
+      });
+    },
+    displaySuccessMessage() {
+      this.message = "Study Session finished! Great Job!";
+      this.messageColor = "green";
+      this.clearFormData();
+    },
+    displayErrorMessage(errorMessage){
+      this.message = errorMessage;
+      this.messageColor = "red";
+    },
+    clearFormData() {
+      this.selectionData = {
+        date: '',
+        start_time: '',
+        end_time: '',
+        subject: '',
+        notes: '',
       };
     },
-    // Prefill start-time with the current time up to minutes
-    created() {
-      // Prefill session-date with the current date
-      const currentDate = new Date().toISOString().split('T')[0];
-      this.selectionData.date = currentDate;
+  },
+};
+</script>
   
-      // Prefill start-time with the current time in 24-hour format
-      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-      this.selectionData.start_time = currentTime;
-    },
-    methods: {
-      prefillEndTime() {
-        // Prefill end-time with the current time in 24-hour format
-        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        this.selectionData.end_time = currentTime;
-        this.$nextTick(() => {
-          // Trigger the click event of the "Create Selection" or "Create Session" button
-          // Replace 'createMusicSelection' or 'createStudySession' with your actual method name
-          this.$refs.createButton.click(); // Assuming you have a ref on the button like <button ref="createButton" @click="createMusicSelection">Create Selection</button>
-        });
-      },
-      createMusicSelection() {
-        const musicSelectionData = { ...this.selectionData };
-        // Adjust the API endpoint as needed
-        fetch('/api/study-sessions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify(musicSelectionData),
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.id) {
-            this.displaySuccessMessage();
-          } else {
-            this.displayErrorMessage(data.error);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          this.displayErrorMessage('An error occurred while creating the selection: ' + (error.message || 'Check console for details.'));
-        });
-      },
-      displaySuccessMessage() {
-        this.message = "Study Session finished! Great Job!";
-        this.messageColor = "green";
-        this.clearFormData();
-      },
-      displayErrorMessage(errorMessage){
-        this.message = errorMessage;
-        this.messageColor = "red";
-      },
-      clearFormData() {
-        this.selectionData = {
-          date: '',
-          start_time: '',
-          end_time: '',
-          subject: '',
-          notes: '',
-        };
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  /* Style for the Notes textarea */
-  .notes-label {
-    display: block;
-    text-align: center;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    font-family: 'cursive'; /* Set the desired cursive font */
-  }
-  
-  .notes-container {
-    text-align: center;
-  }
-  
-  textarea#notes {
-    width: 80%; /* Adjust the width as needed */
-    padding: 10px;
-    font-family: 'cursive'; /* Set the same cursive font */
-    font-size: 1.2rem;
-    border: 2px solid #3498db;
-    border-radius: 5px;
-    margin: 0 auto; /* Center the textarea */
-  }
-  
-    label[for="session-date"],
-    label[for="start-time"],
-    label[for="end-time"],
-    input#session-date,
-    input#start-time,
-    input#end-time {
-      display: none;
-    }
-    .timer-component {
-    float: right;
-    width: 30%;
-    margin-right: 10px;
-  }
-  </style>
+<style scoped>
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+h1 {
+  text-align: center;
+  color: #3498db;
+  font-family: Arial, sans-serif;
+}
+
+form {
+  display: grid;
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+button {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2874a6;
+}
+
+#messageBox {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2rem;
+}
+
+.timer-component {
+  margin-top: 20px;
+}
+
+.inspirational-message-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.router-link {
+  text-decoration: none;
+}
+
+.router-link button {
+  margin-top: 20px;
+}
+</style>

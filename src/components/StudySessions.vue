@@ -51,15 +51,29 @@ export default {
     },
   },
   methods: {
-    calculateSessionDuration(startTime, endTime) {
-      const start = startTime.split(':').map(Number);
-      const end = endTime.split(':').map(Number);
-      const startDate = new Date(0, 0, 0, start[0], start[1], start[2]);
-      const endDate = new Date(0, 0, 0, end[0], end[1], end[2]);
-      const diff = endDate - startDate;
-      const durationInMinutes = Math.floor(diff / 60000);
-      return durationInMinutes < 0 ? durationInMinutes + 1440 : durationInMinutes; // Add 24 hours if end time is past midnight
+
+    convertTo12HourFormat(timeString) {
+      const [hours, minutes] = timeString.split(':').map(Number);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const adjustedHours = hours % 12 || 12; // Converts '0' to '12'
+      return `${adjustedHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
     },
+
+    calculateSessionDuration(startTime, endTime) {
+    function parseTime(timeString) {
+      const [time, modifier] = timeString.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+      if (modifier === 'PM' && hours < 12) hours += 12;
+      if (modifier === 'AM' && hours === 12) hours = 0;
+      return new Date(0, 0, 0, hours, minutes);
+    }
+
+    const startDate = parseTime(startTime);
+    const endDate = parseTime(endTime);
+    let diff = (endDate - startDate) / 60000; // diff in minutes
+    if (diff < 0) diff += 24 * 60; // Adjust for sessions that end after midnight
+    return diff;
+  },
     async fetchStudySessions() {
       try {
         const response = await axios.get('/api/study-sessions', {
@@ -67,17 +81,24 @@ export default {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        this.Study_Sessions = response.data;
+
+        this.Study_Sessions = response.data.map(session => ({
+          ...session,
+          start_time: this.convertTo12HourFormat(session.start_time),
+          end_time: this.convertTo12HourFormat(session.end_time)
+        }));
       } catch (error) {
         console.error('Error fetching study sessions:', error.response.data);
       }
     }
   },
+
   mounted() {
     this.fetchStudySessions();
   }
 };
 </script>
+
 <style scoped>
 .study-sessions-table, .scheduled-exams-table {
   max-width: 100%;
